@@ -1,0 +1,22 @@
+[
+  {
+    "username": "admin",
+    "password": "admin123",
+    "phone": "13800000000"
+  },
+  {
+    "username": "test",
+    "password": "test123",
+    "phone": "13800000001"
+  },
+  {
+    "username": "user1",
+    "password": "test123",
+    "phone": "13800000002"
+  },
+  {
+    "username": "user2",
+    "password": "test123",
+    "phone": "13800000003"
+  }
+]
