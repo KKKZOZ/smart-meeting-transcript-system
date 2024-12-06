@@ -2,50 +2,85 @@
 
 ## 创建并激活虚拟环境
 
++ Using `conda`
+
 ```bash
-# 打开文件夹非常重要
 cd backend
 # anaconda创建虚拟环境
 conda create -n gjrg python=3.9
+
 # 激活虚拟环境
 conda activate gjrg
+
 # 安装依赖包
 pip install -r requirements.txt
 ```
 
++ Using `uv`
+
+```bash
+# 创建虚拟环境
+uv venv --python 3.9
+
+# 激活虚拟环境
+source .venv/bin/activate
+
+# 安装依赖包
+uv pip install -r requirements.txt
+```
+
 ## 数据库初始化
 
-1. 首先在MySQL中创建数据库：
-```sql
-CREATE DATABASE IF NOT EXISTS dbname DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+0. 如果有 Docker，可以本地部署一个作为最基础的测试
+
+```shell
+docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
 ```
 
-2. 修改.env文件中的数据库连接信息：
+
+1. 首先在MySQL中创建数据库：
+
+如果使用的是 Docker，可以使用以下命令直接创建数据库:
+
+```shell
+docker exec mysql mysql -uroot -p123456 -e "CREATE DATABASE IF NOT EXISTS meeting_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
-DATABASE_URL=mysql+pymysql://root:123456@localhost/dbname
+
+```sql
+CREATE DATABASE IF NOT EXISTS meeting_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+1. 修改.env文件中的数据库连接信息：
+
+```
+DATABASE_URL=mysql+pymysql://root:123456@localhost/meeting_system
 ```
 
 3. 运行初始化脚本：
+
 ```bash
-#windows
+# Windows
 python .\scripts\init_database.py
+
+# Linux/MacOS
+python ./scripts/init_database.py
 ```
 
 初始化后会创建以下账号：
+
 - 管理员账号：admin / admin123
 - 测试账号：test / test123
 
 ## 运行应用
 
 启动FastAPI应用：
+
 ```bash
 # 开发模式启动（自动重载）
 uvicorn main:app --reload --port 8000
 # 生产模式启动
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
-
-
 
 ## 运行测试
 
@@ -56,9 +91,6 @@ pytest tests/test_auth.py -v
 # 或者直接运行测试文件
 python tests/test_auth.py
 ```
-
-
-
 
 # 开发方法
 
@@ -73,4 +105,3 @@ python tests/test_auth.py
 7. scripts文件夹存放一些工具脚本。
 
 路由格式可以参考登录/注册的auth文件夹以及测试文件test_auth.py。
-

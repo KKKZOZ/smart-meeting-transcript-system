@@ -1,3 +1,4 @@
+
 -- 清空并重新创建用户表
 TRUNCATE TABLE users;
 

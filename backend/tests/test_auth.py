@@ -45,8 +45,8 @@ def test_login_success():
     response = requests.post(
         f"{BASE_URL}/api/login",
         data={
-            "username": "testuser",
-            "password": "testpass"
+            "username": "admin",
+            "password": "admin123"
         }
     )
     assert response.status_code == 200
