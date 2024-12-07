@@ -8,6 +8,7 @@ engine = create_engine(settings.DATABASE_URL)
 # 创建会话工厂
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 def get_db():
     """
     依赖函数，用于获取数据库会话
@@ -17,4 +18,4 @@ def get_db():
     try:
         yield db
     finally:
-        db.close() 
+        db.close()

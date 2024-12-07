@@ -8,4 +8,4 @@ from app.db.init_db import init_db
 
 if __name__ == "__main__":
     print("开始初始化数据库...")
-    init_db() 
+    init_db()
