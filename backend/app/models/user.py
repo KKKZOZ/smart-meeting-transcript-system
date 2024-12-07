@@ -1,11 +1,13 @@
 from sqlalchemy import Column, Integer, String
 from app.db.base import Base
 
+
 class User(Base):
     """
     用户数据模型
     定义用户在数据库中的表结构
     """
+
     __tablename__ = "users"
 
     # 用户ID，主键

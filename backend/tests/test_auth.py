@@ -3,15 +3,12 @@ import requests
 # 服务器地址
 BASE_URL = "http://localhost:8000"
 
+
 def test_register_success():
     """测试正常注册"""
     response = requests.post(
         f"{BASE_URL}/api/register",
-        json={
-            "username": "testuser",
-            "password": "testpass",
-            "phone": "13800138000"
-        }
+        json={"username": "testuser", "password": "testpass", "phone": "13800138000"},
     )
     assert response.status_code == 200
     assert "access_token" in response.json()
@@ -19,11 +16,7 @@ def test_register_success():
 def test_login_success():
     """测试正常登录"""
     response = requests.post(
-        f"{BASE_URL}/api/login",
-        data={
-            "username": "admin",
-            "password": "admin123"
-        }
+        f"{BASE_URL}/api/login", data={"username": "admin", "password": "admin123"}
     )
     assert response.status_code == 200
     assert "access_token" in response.json()
