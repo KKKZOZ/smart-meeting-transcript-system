@@ -3,6 +3,8 @@ from sqlalchemy import text
 from app.db.session import engine
 from app.db.base import Base
 
+from app.models import get_all_models
+
 
 def execute_sql_file(file_path: str, conn) -> bool:
     """
@@ -36,7 +38,11 @@ def init_db():
     2. 执行用户初始化SQL
     3. 执行其他初始化SQL
     """
+
+    get_all_models()  # 通过调用此函数，确保所有模型都已加载
+
     print(f"使用的数据库URL: {engine.url}")
+    print("准备创建的表：", Base.metadata.tables.keys())
     # 创建数据库表
     Base.metadata.create_all(bind=engine)
 
