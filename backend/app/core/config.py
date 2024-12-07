@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     # JWT加密密钥
     SECRET_KEY: str
 
+    # JWT算法
+    ALGORITHM: str = "HS256"
     # JWT令牌过期时间(分钟)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
