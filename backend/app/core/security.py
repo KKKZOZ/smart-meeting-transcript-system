@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 # 密码加密上下文
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
+# 只是为了规范性，tokenUrl不参与整体逻辑
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
@@ -28,7 +28,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY,settings.ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, settings.ALGORITHM)
     return encoded_jwt
 
 
@@ -49,9 +49,13 @@ def get_password_hash(password: str):
     :return: 哈希后的密码
     """
     return pwd_context.hash(password)
+
+
 def decode_token(token: str):
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
         user_id: str = payload.get("sub")
         if user_id is None:
             raise HTTPException(
@@ -67,9 +71,9 @@ def decode_token(token: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> User:
     user_id = decode_token(token)
     user = db.query(User).filter(User.id == user_id).first()
@@ -79,4 +83,4 @@ async def get_current_user(
             detail="用户不存在",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return user 
+    return user
