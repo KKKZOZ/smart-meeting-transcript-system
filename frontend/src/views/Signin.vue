@@ -1,13 +1,51 @@
 <script setup>
-import { onBeforeUnmount, onBeforeMount } from "vue";
+import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
+import { authService } from '@/services/authService';
 import Navbar from "@/examples/PageLayout/Navbar.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 import ArgonSwitch from "@/components/ArgonSwitch.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 const body = document.getElementsByTagName("body")[0];
 
+const router = useRouter();
 const store = useStore();
+
+// 表单数据
+const formData = ref({
+  username: '',
+  password: '',
+  rememberMe: false
+});
+
+// 错误信息
+const error = ref('');
+
+// 登录方法
+const handleLogin = async () => {
+  try {
+    error.value = '';
+    const response = await authService.login({
+      username: formData.value.username,
+      password: formData.value.password
+    });
+    
+    console.log('Login Response:', response); // 打印登录响应
+    
+    if (response.access_token) {
+      console.log('Access Token:', response.access_token); // 打印 access_token
+      if (formData.value.rememberMe) {
+        localStorage.setItem('username', formData.value.username);
+      }
+      
+      router.push('/dashboard-default');
+    }
+  } catch (err) {
+    error.value = err.message || '登录失败，请重试';
+  }
+};
+
 onBeforeMount(() => {
   store.state.hideConfigButton = true;
   store.state.showNavbar = false;
@@ -22,6 +60,7 @@ onBeforeUnmount(() => {
   store.state.showFooter = true;
   body.classList.add("bg-gray-100");
 });
+
 </script>
 <template>
   <div class="container top-0 position-sticky z-index-sticky">
@@ -49,49 +88,61 @@ onBeforeUnmount(() => {
                   <p class="mb-0">Enter your email and password to sign in</p>
                 </div>
                 <div class="card-body">
-                  <form role="form">
+                  <form role="form" @submit.prevent="handleLogin">
                     <div class="mb-3">
                       <argon-input
-                        id="email"
-                        type="email"
-                        placeholder="Email"
-                        name="email"
+                        id="username"
+                        v-model="formData.username"
+                        type="text"
+                        placeholder="Username"
+                        name="username"
                         size="lg"
                       />
                     </div>
                     <div class="mb-3">
                       <argon-input
                         id="password"
+                        v-model="formData.password"
                         type="password"
                         placeholder="Password"
                         name="password"
                         size="lg"
                       />
                     </div>
-                    <argon-switch id="rememberMe" name="remember-me"
-                      >Remember me</argon-switch
+                    <argon-switch 
+                      v-model="formData.rememberMe"
+                      id="rememberMe" 
+                      name="remember-me"
                     >
+                      Remember me
+                    </argon-switch>
+
+                    <!-- 显示错误信息 -->
+                    <p v-if="error" class="text-danger text-sm mt-2">{{ error }}</p>
 
                     <div class="text-center">
                       <argon-button
+                        type="submit"
                         class="mt-4"
                         variant="gradient"
                         color="success"
                         fullWidth
                         size="lg"
-                        >Sign in</argon-button
                       >
+                        Sign in
+                      </argon-button>
                     </div>
                   </form>
                 </div>
                 <div class="px-1 pt-0 text-center card-footer px-lg-2">
                   <p class="mx-auto mb-4 text-sm">
                     Don't have an account?
-                    <a
-                      href="javascript:;"
+                    <router-link
+                      to="/signup"
                       class="text-success text-gradient font-weight-bold"
-                      >Sign up</a
                     >
+                      Sign up
+                    </router-link>
                   </p>
                 </div>
               </div>

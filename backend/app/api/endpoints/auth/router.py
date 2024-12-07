@@ -19,6 +19,7 @@ async def login(
     """
     用户登录接口
     """
+    print("Received form data:", form_data)
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -31,6 +32,7 @@ async def login(
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
+    print("access_token", access_token)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
