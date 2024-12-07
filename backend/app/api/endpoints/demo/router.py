@@ -5,12 +5,18 @@ from typing import List
 from app.db.session import get_db
 from app.models.demo_item import DemoItem
 from app.schemas.demo_item import DemoItemCreate, DemoItemUpdate, DemoItemResponse
+from app.core.security import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 
 
 @router.post("/demo", response_model=DemoItemResponse)
-async def create_demo_item(item_in: DemoItemCreate, db: Session = Depends(get_db)):
+async def create_demo_item(
+    item_in: DemoItemCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """创建演示项"""
     # 检查指定 id 是否已存在
     exists = db.query(DemoItem).filter(DemoItem.id == item_in.id).first()
@@ -19,7 +25,9 @@ async def create_demo_item(item_in: DemoItemCreate, db: Session = Depends(get_db
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"ID {item_in.id} 已存在"
         )
 
-    demo_item = DemoItem(id=item_in.id, value=item_in.value)
+    demo_item = DemoItem(
+        id=item_in.id, value=item_in.value + "user:" + current_user.username
+    )
     db.add(demo_item)
     db.commit()
     db.refresh(demo_item)

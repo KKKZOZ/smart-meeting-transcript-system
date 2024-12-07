@@ -4,16 +4,16 @@ from typing import Optional
 
 class DemoItemCreate(BaseModel):
     id: int
-    value: int = 0
+    value: str = ""
 
 
 class DemoItemUpdate(BaseModel):
-    value: Optional[int] = None
+    value: Optional[str] = None
 
 
 class DemoItemResponse(BaseModel):
     id: int
-    value: int
+    value: str
 
     class Config:
         from_attributes = True

@@ -34,17 +34,30 @@ def execute_sql_file(file_path: str, conn) -> bool:
 def init_db():
     """
     初始化数据库
-    1. 创建所有表
-    2. 执行用户初始化SQL
-    3. 执行其他初始化SQL
+    1. 检查并删除已存在的表
+    2. 创建所有表
+    3. 执行用户初始化SQL
+    4. 执行其他初始化SQL
     """
 
     get_all_models()  # 通过调用此函数，确保所有模型都已加载
 
     print(f"使用的数据库URL: {engine.url}")
     print("准备创建的表：", Base.metadata.tables.keys())
-    # 创建数据库表
+
+    # 检查并删除已存在的表
+    with engine.connect() as conn:
+        for table_name in Base.metadata.tables.keys():
+            try:
+                conn.execute(text(f"DROP TABLE IF EXISTS {table_name}"))
+                print(f"删除表 {table_name} (如果存在)")
+            except Exception as e:
+                print(f"删除表 {table_name} 时出错：{str(e)}")
+        conn.commit()
+
+    # 创建所有表
     Base.metadata.create_all(bind=engine)
+    print("所有表创建完成")
 
     try:
         # 获取SQL文件的绝对路径
