@@ -6,6 +6,7 @@
 
 ```bash
 cd backend
+
 # anaconda创建虚拟环境
 conda create -n gjrg python=3.9
 
@@ -31,31 +32,33 @@ uv pip install -r requirements.txt
 
 ## 数据库初始化
 
-0. 如果有 Docker，可以本地部署一个作为最基础的测试
+1. 在本地部署数据库:
 
-```shell
-docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
-```
+> 如果有 Docker，可以直接用下面的命令部署一个 MySQL 数据库
+>
+> ```shell
+> docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+> ```
 
-1. 首先在MySQL中创建数据库：
+2. 首先在MySQL中创建数据库:
 
-如果使用的是 Docker，可以使用以下命令直接创建数据库:
-
-```shell
-docker exec mysql mysql -uroot -p123456 -e "CREATE DATABASE IF NOT EXISTS meeting_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-```
+> 如果使用的是 Docker，也可以使用以下命令创建数据库 `meeting_system`:
+>
+> ```shell
+> docker exec mysql mysql -uroot -p123456 -e "CREATE DATABASE IF NOT EXISTS meeting_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+> ```
 
 ```sql
 CREATE DATABASE IF NOT EXISTS meeting_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-1. 修改.env文件中的数据库连接信息：
+3. 修改 `.env` 文件中的数据库连接信息：
 
 ```
 DATABASE_URL=mysql+pymysql://root:123456@localhost/meeting_system
 ```
 
-3. 运行初始化脚本：
+4. 运行初始化脚本：
 
 ```bash
 # Windows
@@ -72,7 +75,7 @@ python ./scripts/init_database.py
 
 ## 运行应用
 
-启动FastAPI应用：
+启动 FastAPI 应用：
 
 ```bash
 # 开发模式启动（自动重载）
