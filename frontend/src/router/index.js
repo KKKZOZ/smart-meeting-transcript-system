@@ -8,6 +8,9 @@ import Profile from "../views/Profile.vue";
 import Signup from "../views/Signup.vue";
 import Signin from "../views/Signin.vue";
 import NewPage from "../views/NewPage.vue";
+import TranscriptPage from "../views/TranscriptPage.vue";
+import CreateTrans from "../views/CreateTrans.vue";
+
 
 const routes = [
   {
@@ -59,6 +62,16 @@ const routes = [
     path: '/new-page',
     name: 'NewPage',
     component: NewPage
+  },
+  {
+    path: '/transcript-page',
+    name: 'TranscriptPage',
+    component: TranscriptPage
+  },
+  {
+    path: '/create-trans',
+    name: 'CreateTrans',
+    component: CreateTrans
   },
 ];
 

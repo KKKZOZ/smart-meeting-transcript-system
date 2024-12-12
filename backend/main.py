@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints.auth.router import router as auth_router
 from app.api.endpoints.notification.router import router as notification_router
 from app.api.endpoints.demo.router import router as demo_router
+from app.api.endpoints.transcription.router import router as transcription_router
 from app.middleware.logging import log_request_middleware
 
 app = FastAPI(
@@ -22,3 +23,4 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api", tags=["认证"])
 app.include_router(notification_router, prefix="/api", tags=["通知"])
 app.include_router(demo_router, prefix="/api", tags=["演示"])
+app.include_router(transcription_router, prefix="/api", tags=["创建会议"])
