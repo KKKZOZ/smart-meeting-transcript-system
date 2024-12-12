@@ -27,7 +27,7 @@ class UserCreate(UserBase):
 class User(UserBase):
     """用户信息模型"""
 
-    id: int
+    user_id: str
 
     class Config:
         # 允许从ORM模型创建

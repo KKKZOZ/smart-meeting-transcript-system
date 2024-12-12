@@ -63,7 +63,7 @@ def decode_token(token: str):
                 detail="无效的认证信息",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        return int(user_id)
+        return user_id
     except (JWTError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -76,7 +76,8 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> User:
     user_id = decode_token(token)
-    user = db.query(User).filter(User.id == user_id).first()
+    print(user_id)
+    user = db.query(User).filter(User.user_id == user_id).first()
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

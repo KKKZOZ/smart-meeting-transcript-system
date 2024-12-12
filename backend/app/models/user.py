@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String
 from app.db.base import Base
+from sqlalchemy import Column, String
 
 
 class User(Base):
@@ -11,7 +11,7 @@ class User(Base):
     __tablename__ = "users"
 
     # 用户ID，主键
-    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String(50), primary_key=True, index=True)
     # 用户名，唯一索引
     username = Column(String(50), unique=True, index=True)
     # 密码哈希值
