@@ -35,6 +35,7 @@ instance.interceptors.response.use(
       localStorage.removeItem('token');
       window.location.href = '/signin';
     }
+    console.log('Error:', error.response.data);
     return Promise.reject(error);
   }
 );

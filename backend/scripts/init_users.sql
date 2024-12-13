@@ -1,5 +1,3 @@
--- 清空并重新创建用户表
-TRUNCATE TABLE users;
 
 -- 插入用户 (密码: admin123)
 INSERT INTO users (user_id,username, hashed_password, email) VALUES 

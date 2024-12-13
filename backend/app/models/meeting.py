@@ -1,9 +1,9 @@
-from sqlalchemy import Column, String, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, PrimaryKeyConstraint
 from app.db.base import Base
 
 
 class Meeting(Base):
-    __tablename__ = "Meetings"
+    __tablename__ = "meetings"
 
     meeting_id = Column(String(50), primary_key=True)  # 修改为 VARCHAR(50)
     title = Column(String(200), nullable=False)
@@ -13,3 +13,13 @@ class Meeting(Base):
     creator_id = Column(
         String(50), ForeignKey("users.user_id"), nullable=False
     )  # 修改为 VARCHAR(50)
+
+
+class MeetingParticipants(Base):
+    __tablename__ = "meeting_participants"
+
+    meeting_id = Column(String(50), ForeignKey("meetings.meeting_id"))
+    user_id = Column(String(50), ForeignKey("users.user_id"))
+    participants_id = Column(String(50), ForeignKey("users.user_id"))
+    # meeting_id和user_id组合主键
+    __table_args__ = (PrimaryKeyConstraint("meeting_id", "user_id"),)

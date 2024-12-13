@@ -40,7 +40,7 @@ def init_db():
     4. 执行其他初始化SQL
     """
 
-    get_all_models()  # 通过调用此函数，确保所有模型都已加载
+    get_all_models()  # 通过调用此函数，显式导入所有的模型类，确保所有模型都已加载
 
     print(f"使用的数据库URL: {engine.url}")
     print("准备创建的表：", Base.metadata.tables.keys())
