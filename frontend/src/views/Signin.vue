@@ -31,14 +31,14 @@ const handleLogin = async () => {
       password: formData.value.password
     });
     
-    console.log('Login Response:', response); // 打印登录响应
+    console.log('Login Response:', response);
     
     if (response.access_token) {
-      console.log('Access Token:', response.access_token); // 打印 access_token
       if (formData.value.rememberMe) {
         localStorage.setItem('username', formData.value.username);
       }
       
+      alert('登录成功！');
       router.push('/dashboard-default');
     }
   } catch (err) {

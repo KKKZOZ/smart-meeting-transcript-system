@@ -1,7 +1,8 @@
 <script setup>
-import { onBeforeUnmount, onBeforeMount } from "vue";
+import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
-
+import { authService } from '@/services/authService';
 import Navbar from "@/examples/PageLayout/Navbar.vue";
 import AppFooter from "@/examples/PageLayout/Footer.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
@@ -9,7 +10,42 @@ import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 const body = document.getElementsByTagName("body")[0];
 
+const router = useRouter();
 const store = useStore();
+
+// 表单数据
+const formData = ref({
+  username: '',
+  email: '',
+  password: '',
+});
+
+// 错误信息
+const error = ref('');
+
+// 登录方法
+const handleRegister = async () => {
+  try {
+    console.log('提交的表单数据：', formData.value);
+    error.value = '';
+    const response = await authService.register({
+      username: formData.value.username,
+      email: formData.value.email,
+      password: formData.value.password
+    });
+    
+    console.log('Register Response:', response);
+    
+    if (response.access_token) {
+      alert('注册成功，已为您自动登录');
+      router.push('/dashboard-default');
+    }
+  } catch (err) {
+    error.value = err.message || '注册失败，请重试';
+  }
+};
+
+
 onBeforeMount(() => {
   store.state.hideConfigButton = true;
   store.state.showNavbar = false;
@@ -170,24 +206,27 @@ onBeforeUnmount(() => {
               </div>
             </div>
             <div class="card-body">
-              <form role="form">
+              <form role="form" @submit.prevent="handleRegister">
                 <argon-input
                   id="name"
                   type="text"
                   placeholder="Name"
                   aria-label="Name"
+                  v-model="formData.username"
                 />
                 <argon-input
                   id="email"
                   type="email"
                   placeholder="Email"
                   aria-label="Email"
+                  v-model="formData.email"
                 />
                 <argon-input
                   id="password"
                   type="password"
                   placeholder="Password"
                   aria-label="Password"
+                  v-model="formData.password"
                 />
                 <argon-checkbox checked>
                   <label class="form-check-label" for="flexCheckDefault">
@@ -197,9 +236,13 @@ onBeforeUnmount(() => {
                     >
                   </label>
                 </argon-checkbox>
+
+                <p v-if="error" class="text-danger text-sm mt-2">{{ error }}</p>
+
                 <div class="text-center">
                   <argon-button
                     fullWidth
+                    type="submit"
                     color="dark"
                     variant="gradient"
                     class="my-4 mb-2"

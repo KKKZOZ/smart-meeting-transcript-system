@@ -23,5 +23,19 @@ export const authService = {
       } catch (error) {
         throw error.response?.data || { message: '登录失败' };
       }
+    },
+    async register(credentials) {
+      try {
+        const response = await axios.post('/api/register', credentials);
+        
+        console.log('API Response:', response.data);
+        if (response.data.access_token) {
+          console.log('Token:', response.data.access_token);
+          localStorage.setItem('token', response.data.access_token);
+        }
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || { message: '登录失败' };
+      }
     }
   };
