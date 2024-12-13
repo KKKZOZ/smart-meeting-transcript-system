@@ -1,6 +1,8 @@
 from passlib.context import CryptContext
 import json
 import os
+import random
+import string
 
 # 密码加密上下文
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -18,21 +20,26 @@ def generate_sql_commands(users_data: list) -> str:
     for user in users_data:
         hashed_password = generate_password_hash(user["password"])
         sql = f"""-- 插入用户 (密码: {user["password"]})
-INSERT INTO users (username, hashed_password, phone) VALUES 
-('{user["username"]}', '{hashed_password}', '{user["phone"]}');
+INSERT INTO users (user_id,username, hashed_password, email) VALUES 
+('{generate_user_id()}','{user["username"]}', '{hashed_password}', '{user["email"]}');
 """
         sql_commands.append(sql)
 
     return "\n".join(sql_commands)
 
 
+def generate_user_id() -> str:
+    ## 使用15位随机字符串作为用户ID
+    return "".join(random.choices(string.ascii_letters + string.digits, k=15))
+
+
 def main():
     # 预设用户数据
     users = [
-        {"username": "admin", "password": "admin123", "phone": "13800000000"},
-        {"username": "test", "password": "test123", "phone": "13800000001"},
-        {"username": "user1", "password": "test123", "phone": "13800000002"},
-        {"username": "user2", "password": "test123", "phone": "13800000003"},
+        {"username": "admin", "password": "admin123", "email": "admin@example.com"},
+        {"username": "test", "password": "test123", "email": "test@example.com"},
+        {"username": "user1", "password": "test123", "email": "user1@example.com"},
+        {"username": "user2", "password": "test123", "email": "user2@example.com"},
     ]
 
     # 生成SQL命令

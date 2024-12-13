@@ -8,6 +8,8 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import Token, UserCreate
+import random
+import string
 
 router = APIRouter()
 
@@ -46,11 +48,17 @@ async def register(user_in: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="用户名已存在"
         )
+    db_user = db.query(User).filter(User.email == user_in.email).first()
+    if db_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="邮箱已存在"
+        )
 
     user = User(
+        user_id=generate_user_id(),
         username=user_in.username,
         hashed_password=get_password_hash(user_in.password),
-        phone=user_in.phone,
+        email=user_in.email,
     )
     db.add(user)
     db.commit()
@@ -61,3 +69,8 @@ async def register(user_in: UserCreate, db: Session = Depends(get_db)):
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+def generate_user_id() -> str:
+    ## 使用15位随机字符串作为用户ID
+    return "".join(random.choices(string.ascii_letters + string.digits, k=15))

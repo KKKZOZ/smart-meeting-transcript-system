@@ -7,14 +7,14 @@ class UserBase(BaseModel):
     """用户基础模型"""
 
     username: str
-    phone: Optional[str] = None
+    email: Optional[str] = None
 
     @classmethod
-    def validate_phone(cls, v):
+    def validate_email(cls, v):
         if v is None:
             return v
-        if not re.match(r"^1[3-9]\d{9}$", v):
-            raise ValueError("无效的手机号码格式")
+        if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", v):
+            raise ValueError("无效的邮箱格式")
         return v
 
 

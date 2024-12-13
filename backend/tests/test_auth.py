@@ -1,4 +1,5 @@
 import requests
+import random
 
 # 服务器地址
 BASE_URL = "http://localhost:8000"
@@ -6,9 +7,20 @@ BASE_URL = "http://localhost:8000"
 
 def test_register_success():
     """测试正常注册"""
+    username = "user_" + str(random.randint(10000, 99999))
     response = requests.post(
         f"{BASE_URL}/api/register",
-        json={"username": "testuser", "password": "testpass", "phone": "13800138000"},
+        json={
+            "username": username,
+            "password": "test123",
+            "email": f"{username}@example.com",
+        },
+    )
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+
+    response = requests.post(
+        f"{BASE_URL}/api/login", data={"username": f"{username}", "password": "test123"}
     )
     assert response.status_code == 200
     assert "access_token" in response.json()
@@ -45,5 +57,6 @@ def test_protected_endpoint():
 
 if __name__ == "__main__":
     # test_register_success()
+    test_login_success()
     test_protected_endpoint()
     print("测试完成！")

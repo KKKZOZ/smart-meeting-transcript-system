@@ -1,5 +1,5 @@
 from app.db.base import Base
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Boolean
 
 
 class User(Base):
@@ -13,8 +13,14 @@ class User(Base):
     # 用户ID，主键
     user_id = Column(String(50), primary_key=True, index=True)
     # 用户名，唯一索引
-    username = Column(String(50), unique=True, index=True)
+    username = Column(String(100), unique=True, index=True, nullable=False)
     # 密码哈希值
     hashed_password = Column(String(100))
-    # 电话号码，唯一索引
-    phone = Column(String(11), unique=True, index=True, nullable=True)
+    # email
+    email = Column(String(255), unique=True, index=True, nullable=True)
+
+    notification_type = Column(String(20))
+
+    frequency = Column(String(20))
+
+    enabled = Column(Boolean, default=True)

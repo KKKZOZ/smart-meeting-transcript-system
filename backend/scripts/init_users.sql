@@ -1,19 +1,18 @@
-
 -- 清空并重新创建用户表
 TRUNCATE TABLE users;
 
 -- 插入用户 (密码: admin123)
-INSERT INTO users (username, hashed_password, phone) VALUES 
-('admin', '$2b$12$Aw0Sc2BiPHgKuzZ6tdkbjuR7WFLkWmcQ1YG0Ve5iGct.prcrPaCU6', '13800000000');
+INSERT INTO users (user_id,username, hashed_password, email) VALUES 
+('WZIuMvWHhZCIiJA','admin', '$2b$12$NnG4Sxw267FV0m4oXpdGK.SdarNx5NgslvQPiwyC1UNVtakSO3M96', 'admin@example.com');
 
 -- 插入用户 (密码: test123)
-INSERT INTO users (username, hashed_password, phone) VALUES 
-('test', '$2b$12$v2DjpsUTtSEvPciRIJttUesgjQNyfP2yDaFXqBzF0TQDTTHHI5BFq', '13800000001');
+INSERT INTO users (user_id,username, hashed_password, email) VALUES 
+('JVy6aUWEnZBqCiU','test', '$2b$12$0CfW9pcIygKOwbhaX./w7ev6mtqKSyy9crTdQWwYTp66mdVjxUiXG', 'test@example.com');
 
 -- 插入用户 (密码: test123)
-INSERT INTO users (username, hashed_password, phone) VALUES 
-('user1', '$2b$12$ac/3nQQPrdTseUiBUdnCE.upCJ17e4fVdJjPnyUWYHjEn2UzdSJp6', '13800000002');
+INSERT INTO users (user_id,username, hashed_password, email) VALUES 
+('BL9PkGGttj4pS7J','user1', '$2b$12$d9jfAing.ngoYDiSkiSRXuKltXTE8pVPAhlXOgYuVk/.G0E3onGIi', 'user1@example.com');
 
 -- 插入用户 (密码: test123)
-INSERT INTO users (username, hashed_password, phone) VALUES 
-('user2', '$2b$12$KW3I8..RkXwAE6xZ00L0XeQV4XzZWWl0WvE9flQvvEIc/igAJT0Gu', '13800000003');
+INSERT INTO users (user_id,username, hashed_password, email) VALUES 
+('ioPO5kU63QFgeXh','user2', '$2b$12$s/O36tGecEuym6Cb.rDG7OEcmYJ4rCKzUdiiIhh8c6ofSaWPjYr3i', 'user2@example.com');
