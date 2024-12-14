@@ -2,10 +2,12 @@ from uuid import uuid4
 
 from app.core.security import get_current_user
 from app.db.session import get_db
-from app.models.meeting import Meeting
-from app.schemas.meeting import MeetingCreate, MeetingResponse
+from app.models.meeting import Meeting, MeetingParticipants
+from app.schemas.meeting import MeetingCreate, MeetingResponse, ParticipantResponse
+from app.models.user import User
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from typing import List
 
 router = APIRouter()
 
@@ -18,7 +20,6 @@ def create_meeting(
 ):
     """
     创建会议记录
-     user_id: str = Depends(get_current_user)
     """
     user_id = user.user_id
     meeting_id = uuid4()  # 生成唯一的会议 ID
@@ -35,7 +36,27 @@ def create_meeting(
     db.commit()
     db.refresh(new_meeting)
 
+    # 将每个参与者与会议结合并插入到 meeting_participants 表中
+    for participant_id in meeting_in.participants:
+        meeting_participant = MeetingParticipants(
+            meeting_id=meeting_id, participant_id=participant_id
+        )
+        db.add(meeting_participant)
+
+    db.commit()  # 提交更改，保存到数据库
+
     return new_meeting
+
+
+@router.get("/getUsers", response_model=List[ParticipantResponse])
+def get_all_users(db: Session = Depends(get_db)):
+    """
+    获取所有用户
+    """
+    users = db.query(
+        User.user_id.label("participant_id"), User.username.label("participant_name")
+    ).all()
+    return users
 
 
 # 创建会议：用户id，会议名称，起止时间，会议语言，用户成员；return t/f

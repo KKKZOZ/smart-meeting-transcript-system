@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from typing import List
 from pydantic import BaseModel
 
 
@@ -8,15 +8,24 @@ class MeetingCreate(BaseModel):
     start_time: datetime
     end_time: datetime
     language: str
+    participants: List[str]
 
 
 class MeetingResponse(BaseModel):
-    meeting_id: str  # 修改为 str，因为数据库中的 meeting_id 是 VARCHAR(50)
+    meeting_id: str
     title: str
     start_time: datetime
     end_time: datetime
     language: str
-    creator_id: str  # 修改为 str，因为数据库中的 creator_id 是 VARCHAR(50)
+    creator_id: str
 
     class Config:
         orm_mode = True  # 支持从 ORM 模型直接转为 Pydantic 模型
+
+
+class ParticipantResponse(BaseModel):
+    participant_id: str
+    participant_name: str
+
+    class Config:
+        orm_mode = True
