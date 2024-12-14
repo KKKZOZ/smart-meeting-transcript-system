@@ -19,7 +19,6 @@ class MeetingParticipants(Base):
     __tablename__ = "meeting_participants"
 
     meeting_id = Column(String(50), ForeignKey("meetings.meeting_id"))
-    user_id = Column(String(50), ForeignKey("users.user_id"))
-    participants_id = Column(String(50), ForeignKey("users.user_id"))
-    # meeting_id和user_id组合主键
-    __table_args__ = (PrimaryKeyConstraint("meeting_id", "user_id"),)
+    participant_id = Column(String(50), ForeignKey("users.user_id"))
+    # meeting_id和participants_id组合主键
+    __table_args__ = (PrimaryKeyConstraint("meeting_id", "participant_id"),)

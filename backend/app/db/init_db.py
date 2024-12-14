@@ -47,6 +47,8 @@ def init_db():
 
     # 检查并删除已存在的表
     with engine.connect() as conn:
+        # 因为有外键约束，所以如果已经存在表的话，不按顺序删除会导致失败，因此设置不检查
+        conn.execute(text("SET FOREIGN_KEY_CHECKS = 0"))
         for table_name in Base.metadata.tables.keys():
             try:
                 conn.execute(text(f"DROP TABLE IF EXISTS {table_name}"))
