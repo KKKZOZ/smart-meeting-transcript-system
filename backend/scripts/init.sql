@@ -10,7 +10,7 @@ INSERT INTO demo_items (id,value) VALUES
 
 
 -- 插入一个会议，由test用户创造
-INSERT INTO meetings (meeting_id, title, start_time, end_time, language, creator_id,video_id)
+INSERT INTO meetings (meeting_id, title, start_time, end_time, language, creator_id,video_url)
 VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', 'test_meeting', '2024-12-14 12:00:00', '2024-12-14 14:00:00', 'zh', 'JVy6aUWEnZBqCiU','https://software-project510.oss-cn-beijing.aliyuncs.com/Audio/2024-12-18-video.mp3');
 
 -- 会议由test，admin，user1参与
