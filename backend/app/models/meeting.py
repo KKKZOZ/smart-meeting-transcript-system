@@ -13,8 +13,8 @@ class Meeting(Base):
     creator_id = Column(
         String(50), ForeignKey("users.user_id"), nullable=False
     )  # 修改为 VARCHAR(50)
-    #video_url = Column(String(200), nullable=True)
-    video_id = Column(String(200), nullable=True)
+    video_url = Column(String(200), nullable=True)
+    
 
 
 class MeetingParticipants(Base):
