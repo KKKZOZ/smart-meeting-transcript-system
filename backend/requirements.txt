@@ -13,3 +13,4 @@ pydantic-settings==2.1.0
 requests==2.31.0
 ruff==0.8.2
 pre-commit==4.0.1
+oss2==2.19.1

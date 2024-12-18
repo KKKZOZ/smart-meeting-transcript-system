@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text
+from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text, Boolean
 from app.db.base import Base
 
 
@@ -11,3 +11,4 @@ class Transcription(Base):
     content = Column(Text, nullable=True)
     timestamp = Column(TIMESTAMP, nullable=False)
     language = Column(String(10), nullable=True)
+    ischanged = Column(Boolean, default=False, nullable=False)
