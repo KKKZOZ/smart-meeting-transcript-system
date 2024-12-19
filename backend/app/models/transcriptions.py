@@ -11,5 +11,4 @@ class Transcription(Base):
     content = Column(Text, nullable=True)
     timestamp = Column(TIMESTAMP, nullable=False)
     language = Column(String(10), nullable=True)
-    # ischanged = Column(Boolean, default=False, nullable=False)
-    ischanged = Column(Boolean, default=False)
+    ischanged = Column(Boolean, default=False, nullable=True)

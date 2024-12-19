@@ -43,7 +43,7 @@ async def log_request_middleware(request: Request, call_next):
             # 克隆请求体
             body_bytes = await request.body()
             # 记录请求体
-            logger.info(f"请求体: {body_bytes.decode('utf-8')}")
+            # logger.info(f"请求体: {body_bytes.decode('utf-8')}")
 
             # 创建一个新的 BodyCache 对象
             async def receive():

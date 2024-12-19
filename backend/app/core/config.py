@@ -9,6 +9,12 @@ class Settings(BaseSettings):
     所有配置项都可以通过环境变量覆盖
     """
 
+    ALIBABA_ACCESS_KEY_ID: str
+    ALIBABA_ACCESS_KEY_SECRET: str
+
+    BAIDU_APP_ID: str
+    BAIDU_APP_KEY: str
+
     # 数据库连接URL
     DATABASE_URL: str  # = "mysql+pymysql://root:123456@localhost/gjrcdemo"
 

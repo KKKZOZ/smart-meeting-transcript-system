@@ -39,8 +39,8 @@
       <div class="form-group">
         <label for="language">Language:</label>
         <select id="language" v-model="meeting.language" required>
-          <option value="Chinese">Chinese</option>
-          <option value="English">English</option>
+          <option value="zh">Chinese</option>
+          <option value="en">English</option>
         </select>
       </div>
 
@@ -79,7 +79,7 @@ const meeting = ref({
   name: '',
   startTime: '',
   endTime: '',
-  language: 'Chinese',
+  language: 'zh',
 });
 
 const value1 = ref([])
@@ -112,7 +112,10 @@ const submitMeeting = async () => {
     const response = await axios.post('/api/meetings', payload);
     console.log(response)
     alert('Meeting created successfully!');
-    router.push('/transcript-page');
+    router.push({
+      path:'/transcript-page',
+      query:{meeting_id:response.data.meeting_id}
+    });
   } catch (error) {
     console.log(error)
     console.error('Error creating meeting:', error);
