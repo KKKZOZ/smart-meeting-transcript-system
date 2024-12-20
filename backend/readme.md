@@ -52,7 +52,7 @@ uv pip install -r requirements.txt
 CREATE DATABASE IF NOT EXISTS meeting_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-3. 修改 `.env` 文件中的数据库连接信息：
+3. 将 `.env.example` 文件重命名为 `.env`, 并按需修改其中的数据:
 
 ```
 DATABASE_URL=mysql+pymysql://root:123456@localhost/meeting_system
