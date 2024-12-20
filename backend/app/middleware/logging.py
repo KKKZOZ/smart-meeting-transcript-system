@@ -1,6 +1,7 @@
 from fastapi import Request
 from logging import handlers, Formatter, getLogger, INFO
 import time
+import json
 
 # 配置日志处理器，确保正确处理中文
 handler = handlers.RotatingFileHandler(
@@ -35,15 +36,43 @@ async def log_request_middleware(request: Request, call_next):
     logger.info("=" * 50)
     logger.info(f"请求路径: {request.method} {request.url}")
     logger.info(f"客户端地址: {request.client.host}")
-    logger.info(f"请求头: {dict(request.headers)}")
+
+    important_headers = [
+        "authorization",
+        "content-type",
+        "accept",
+    ]
+
+    headers_to_log = {}
+    for header_name in important_headers:
+        if header_name in request.headers:
+            headers_to_log[header_name] = request.headers[header_name]
+    logger.info(f"请求头: {headers_to_log}")
 
     # 如果是POST请求，记录请求体
     if request.method == "POST":
         try:
             # 克隆请求体
             body_bytes = await request.body()
-            # 记录请求体
-            # logger.info(f"请求体: {body_bytes.decode('utf-8')}")
+
+            try:
+                body_json = json.loads(body_bytes.decode("utf-8"))
+                logger.info(f"请求体 (JSON): {body_json}")
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                content_type = request.headers.get("content-type", "")
+                if "multipart/form-data" in content_type:
+                    logger.info(
+                        "请求体 (multipart/form-data): 包含文件或其他二进制数据，已省略日志记录"
+                    )
+                elif "application/x-www-form-urlencoded" in content_type:
+                    logger.info(
+                        f"请求体 (application/x-www-form-urlencoded): {body_bytes.decode('utf-8', errors='replace')}"
+                    )
+
+                else:
+                    logger.info(
+                        f"请求体 (二进制): 长度 {len(body_bytes)} 字节, 无法解码为文本"
+                    )
 
             # 创建一个新的 BodyCache 对象
             async def receive():
