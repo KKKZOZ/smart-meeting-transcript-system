@@ -1,6 +1,8 @@
 # Smart Meeting Transcript System
 
-This project, named "Smart Meeting Transcript System," is the final group project for the Advanced Software Engineering course at the University of Chinese Academy of Sciences (UCAS) in the Fall 2024 semester. It is developed by team **ASWE Group** (Advanced Software Engineering Group).
+This project, named "Smart Meeting Transcript System," is the final group project for the Advanced Software Engineering course at the University of Chinese Academy of Sciences (UCAS) in the Fall 2024 semester.
+
+It is developed by team **ASWE Group** (Advanced Software Engineering Group).
 
 ## Team Members
 
