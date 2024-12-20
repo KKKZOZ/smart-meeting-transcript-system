@@ -11,8 +11,15 @@ from sqlalchemy.orm import Session
 
 # 密码加密上下文
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# 只是为了规范性，tokenUrl不参与整体逻辑
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+# OAuth2 认证配置
+# tokenUrl: 指定获取 token 的接口地址，这里对应 auth_router 中的 /login 接口
+# 在 SwaggerUI 中：
+# 1. 点击右上角的 "Authorize" 按钮
+# 2. 在弹出的对话框中输入用户名和密码
+# 3. 点击 "Authorize" 按钮完成认证
+# 4. 之后的所有需要认证的接口都会自动带上 Bearer token
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

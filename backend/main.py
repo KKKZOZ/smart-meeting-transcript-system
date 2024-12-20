@@ -7,7 +7,10 @@ from app.api.endpoints.transcription.router import router as transcription_route
 from app.middleware.logging import log_request_middleware
 
 app = FastAPI(
-    title="FastAPI Auth Demo", description="FastAPI用户认证示例项目", version="1.0.0"
+    title="Smart Meeting Transcript System",
+    description="",
+    version="0.1.0",
+    openapi_extra={"security": [{"OAuth2PasswordBearer": []}]},
 )
 
 app.middleware("http")(log_request_middleware)

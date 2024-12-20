@@ -43,7 +43,10 @@ def init_db():
     get_all_models()  # 通过调用此函数，显式导入所有的模型类，确保所有模型都已加载
 
     print(f"使用的数据库URL: {engine.url}")
-    print("准备创建的表：", Base.metadata.tables.keys())
+    table_names = list(Base.metadata.tables.keys())
+    print("准备创建的表：")
+    for table_name in table_names:
+        print(f"- {table_name}")
 
     # 检查并删除已存在的表
     with engine.connect() as conn:
@@ -52,7 +55,7 @@ def init_db():
         for table_name in Base.metadata.tables.keys():
             try:
                 conn.execute(text(f"DROP TABLE IF EXISTS {table_name}"))
-                print(f"删除表 {table_name} (如果存在)")
+                print(f"删除表 {table_name}")
             except Exception as e:
                 print(f"删除表 {table_name} 时出错：{str(e)}")
         conn.commit()
@@ -69,15 +72,12 @@ def init_db():
         scripts_dir = os.path.join(current_dir, "scripts")
 
         with engine.connect() as conn:
-            # 执行用户初始化SQL
-            user_sql_path = os.path.join(scripts_dir, "init_users.sql")
-            if execute_sql_file(user_sql_path, conn):
-                print("用户初始化完成！")
-
-            # 执行其他初始化SQL
-            init_sql_path = os.path.join(scripts_dir, "init.sql")
-            if execute_sql_file(init_sql_path, conn):
-                print("其他初始化完成！")
+            # 遍历 scripts 目录下的所有 .sql 文件
+            for filename in os.listdir(scripts_dir):
+                if filename.endswith(".sql"):
+                    sql_path = os.path.join(scripts_dir, filename)
+                    if execute_sql_file(sql_path, conn):
+                        print(f"文件 {filename} 执行完成！")
 
         print("数据库初始化完成！")
 
