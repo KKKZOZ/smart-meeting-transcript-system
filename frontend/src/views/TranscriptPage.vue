@@ -41,7 +41,7 @@
         </div>
         </template>
           </el-dialog>
-          <pre>{{ Text || '请点击生成文字' }}</pre>
+          <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ Text || '请点击生成文字' }}</pre>
           <el-button v-if="isTranscribed === 0" type="primary" @click="createTasks">生成文字</el-button>
         </div>
         <div class="right-text">
@@ -60,7 +60,7 @@
         :value="item.value"
       />
     </el-select>
-          <pre v-if="[1, 2].includes(isTranscribed)">{{ translateText || '请选择要翻译成的语言' }}</pre>
+          <pre style="white-space: pre-wrap; word-wrap: break-word;" v-if="[1, 2].includes(isTranscribed)">{{ translateText || '请选择要翻译成的语言' }}</pre>
           <p v-if="[-1, 0].includes(isTranscribed)">{{'请先转录会议' }}</p>
         </div>
       </div>
@@ -209,6 +209,8 @@ const changeRoles = async () => {
 const createTasks = async () => {
   try {
     // 发送 POST 请求到后端的 /transcript 路由
+    isTranscribed.value = 1;
+    Text.value = "正在转录中，请稍候。"
     const formData = new FormData();
     formData.append('meeting_id', meetingId);
     const response = await axios.post('http://localhost:8000/api/transcript', formData, {

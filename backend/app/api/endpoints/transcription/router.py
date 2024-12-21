@@ -5,9 +5,13 @@ from typing import List
 from uuid import uuid4
 from datetime import datetime
 from app.core.security import get_current_user
-from app.core.upload import upload
-from app.core.translate import translate
-from app.core.convert import create_task, poll_task_status, splicing
+from app.services.transcription import (
+    upload,
+    translate,
+    create_task,
+    poll_task_status,
+    splicing,
+)
 from app.db.session import get_db
 from app.models.meeting import Meeting, MeetingParticipants
 from app.models.transcriptions import Transcription
