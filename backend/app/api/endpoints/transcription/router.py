@@ -58,7 +58,17 @@ def create_meeting(
 
     db.commit()  # 提交更改，保存到数据库
 
-    return new_meeting
+    meeting_response = MeetingResponse(
+        meeting_id=new_meeting.meeting_id,
+        title=new_meeting.title,
+        start_time=new_meeting.start_time,
+        end_time=new_meeting.end_time,
+        language=new_meeting.language,
+        creator_id=new_meeting.creator_id,
+        creator_name="",  # 添加创建者名称
+        video_url="",
+    )
+    return meeting_response
 
 
 @router.get("/getUsers", response_model=List[ParticipantResponse])
