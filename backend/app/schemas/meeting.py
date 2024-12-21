@@ -18,10 +18,15 @@ class MeetingResponse(BaseModel):
     end_time: datetime
     language: str
     creator_id: str
+    creator_name: str
     video_url: str
 
     class Config:
-        orm_mode = True  # 支持从 ORM 模型直接转为 Pydantic 模型
+        orm_mode = True
+
+
+class GetMeetingResponse(MeetingResponse):
+    creator_name: str
 
 
 class ParticipantResponse(BaseModel):

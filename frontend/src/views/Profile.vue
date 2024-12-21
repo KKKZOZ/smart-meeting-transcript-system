@@ -284,7 +284,7 @@ onBeforeUnmount(() => {
                           <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7">会议名称</th>
                           <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7 ps-2">开始时间</th>
                           <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7 ps-2">结束时间</th>
-                          <th class="text-center text-uppercase text-secondary text-md font-weight-bolder opacity-7">会议主持</th>
+                          <th class="text-center text-uppercase text-secondary text-md font-weight-bolder opacity-7">会议所有者</th>
                           <th class="text-center text-uppercase text-secondary text-md font-weight-bolder opacity-7">查看详情</th>
                         </tr>
                       </thead>
@@ -304,13 +304,15 @@ onBeforeUnmount(() => {
                             <p class="text-md font-weight-bold mb-0">{{ new Date(meeting.end_time).toLocaleString() }}</p>
                           </td>
                           <td class="align-middle text-center text-md">
-                            <span class="badge badge-lg bg-gradient-info">{{ meeting.creator_id }}</span>
+                            <span class="badge badge-lg bg-gradient-info">{{ meeting.creator_name }}</span>
                           </td>
                           <td class="align-middle text-center">
-                            <a :href="meeting.video_url" target="_blank" class="text-secondary font-weight-bold text-md" >
+                            <router-link 
+                              :to="`/transcript-page?meeting_id=${meeting.meeting_id}`"
+                              class="text-secondary font-weight-bold text-md"
+                            >
                               查看详情
-                            </a>
-                          
+                            </router-link>
                           </td>
                         </tr>
                       </tbody>
