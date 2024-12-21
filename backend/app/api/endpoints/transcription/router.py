@@ -17,9 +17,8 @@ from app.models.meeting import Meeting, MeetingParticipants
 from app.models.transcriptions import Transcription
 from app.models.user import User
 from app.schemas.meeting import MeetingCreate, MeetingResponse, ParticipantResponse
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
 
 
 router = APIRouter()
@@ -60,22 +59,6 @@ def create_meeting(
     db.commit()  # 提交更改，保存到数据库
 
     return new_meeting
-
-@router.get("/getMeetings", response_model=List[MeetingResponse])
-def get_meetings(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """
-    获取当前用户的所有会议，按时间倒序排序
-    """
-    meetings = (
-        db.query(Meeting)
-        .filter(Meeting.creator_id == current_user.user_id)
-        .order_by(desc(Meeting.start_time))  # 假设 Meeting 模型中有 created_at 字段
-        .all()
-    )
-    return meetings
 
 
 @router.get("/getUsers", response_model=List[ParticipantResponse])
