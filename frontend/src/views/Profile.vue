@@ -1,7 +1,8 @@
 <script setup>
-import { onBeforeMount, onMounted, onBeforeUnmount } from "vue";
+import { onBeforeMount, onMounted, onBeforeUnmount, ref } from "vue";
 import { useStore } from "vuex";
 import * as bootstrap from 'bootstrap';
+import axios from '@/axios';  
 
 import setNavPills from "@/assets/js/nav-pills.js";
 import setTooltip from "@/assets/js/tooltip.js";
@@ -12,10 +13,65 @@ const body = document.getElementsByTagName("body")[0];
 
 const store = useStore();
 
+const userData = ref({
+  username: '',
+  email: '',
+  notification_type: '',
+  frequency: '',
+  password: ''
+});
+
+const handlePasswordFocus = () => {
+  userData.value.password = '';
+  console.log("password cleared");
+};
+
+const fetchUserData = async () => {
+  try {
+    const response = await axios.get('/api/me');
+    console.log(response.data);
+    userData.value = response.data;
+    userData.value.password = '********';
+  } catch (error) {
+    console.error('获取用户数据失败:', error);
+  }
+};
+
+const handleSubmit = async () => {
+  try {
+    // 创建要提交的数据对象
+    const updateData = {
+      username: userData.value.username,
+      email: userData.value.email,
+      notification_type: userData.value.notification_type,
+      frequency: userData.value.frequency
+    };
+
+    // 如果密码不是 8 个 * 且不为空，则添加到提交数据中
+    if (userData.value.password && userData.value.password !== '********') {
+      updateData.password = userData.value.password;
+    }
+
+    const response = await axios.put('/api/update-profile', updateData);
+    console.log('更新成功:', response.data);
+    
+    // 重新获取用户数据
+    await fetchUserData();
+    
+    // TODO: 可以添加一个成功提示
+    alert('个人资料更新成功！');
+  } catch (error) {
+    console.error('更新用户数据失败:', error);
+    // TODO: 可以添加一个错误提示
+    alert('更新失败：' + (error.response?.data?.message || error.message));
+  }
+};
+
 onMounted(() => {
   store.state.isAbsolute = true;
   setNavPills();
   setTooltip();
+  fetchUserData();
   
   // 初始化 Bootstrap 标签页
   const tabList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'))
@@ -118,9 +174,12 @@ onBeforeUnmount(() => {
                 <div class="card-header pb-0">
                   <div class="d-flex align-items-center">
                     <p class="mb-0">Edit Profile</p>
-                    <argon-button color="success" size="sm" class="ms-auto"
-                      >确认修改</argon-button
-                    >
+                    <argon-button 
+                      color="success" 
+                      size="sm" 
+                      class="ms-auto"
+                      @click="handleSubmit"
+                    >确认修改</argon-button>
                   </div>
                 </div>
                 <div class="card-body">
@@ -130,19 +189,23 @@ onBeforeUnmount(() => {
                       <label for="example-text-input" class="form-control-label"
                         >Username</label
                       >
-                      <argon-input type="text" value="lucky.jesse" />
+                      <argon-input type="text" v-model="userData.username" />
                     </div>
                     <div class="col-md-4">
                       <label for="example-text-input" class="form-control-label"
                         >Email address</label
                       >
-                      <argon-input type="email" value="jesse@example.com" />
+                      <argon-input type="email" v-model="userData.email" />
                     </div>
                     <div class="col-md-4">
                       <label for="example-text-input" class="form-control-label"
                         >password</label
                       >
-                      <argon-input type="password" value="password" />
+                      <argon-input 
+                        type="password" 
+                        v-model="userData.password"
+                        @focus="handlePasswordFocus"
+                      />
                     </div>
                   </div>
                   
@@ -154,13 +217,13 @@ onBeforeUnmount(() => {
                       <label for="example-text-input" class="form-control-label"
                         >通知类型</label
                       >
-                      <argon-input type="notification-type" value="1" />
+                      <argon-input type="notification-type" v-model="userData.notification_type" />
                     </div>
                     <div class="col-md-6">
                       <label for="example-text-input" class="form-control-label"
                         >频率</label
                       >
-                      <argon-input type="frequency" value="1" />
+                      <argon-input type="frequency" v-model="userData.frequency" />
                     </div>
                     
                   </div>

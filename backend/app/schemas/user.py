@@ -45,3 +45,11 @@ class TokenData(BaseModel):
     """令牌数据模型"""
 
     username: Optional[str] = None
+
+
+class UserUpdate(UserBase):
+    """用户信息更新模型"""
+
+    password: Optional[str] = None
+    notification_type: Optional[str] = None
+    frequency: Optional[str] = None
