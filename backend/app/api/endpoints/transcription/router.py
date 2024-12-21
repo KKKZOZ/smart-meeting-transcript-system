@@ -61,7 +61,7 @@ def create_meeting(
 
     return new_meeting
 
-@router.post("/getMeetings", response_model=List[MeetingResponse])
+@router.get("/getMeetings", response_model=List[MeetingResponse])
 def get_meetings(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -71,7 +71,7 @@ def get_meetings(
     """
     meetings = (
         db.query(Meeting)
-        .filter(Meeting.user_id == current_user.id)
+        .filter(Meeting.creator_id == current_user.user_id)
         .order_by(desc(Meeting.start_time))  # 假设 Meeting 模型中有 created_at 字段
         .all()
     )

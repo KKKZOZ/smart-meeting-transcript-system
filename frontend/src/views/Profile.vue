@@ -1,7 +1,7 @@
 <script setup>
 import { onBeforeMount, onMounted, onBeforeUnmount, ref } from "vue";
 import { useStore } from "vuex";
-import * as bootstrap from 'bootstrap';
+// import * as bootstrap from 'bootstrap';
 import axios from '@/axios';  
 
 import setNavPills from "@/assets/js/nav-pills.js";
@@ -67,6 +67,27 @@ const handleSubmit = async () => {
   }
 };
 
+// 添加会议列表的响应式引用
+const meetings = ref([]);
+
+// 添加获取会议列表的函数
+const fetchMeetings = async () => {
+  try {
+    const response = await axios.get('/api/getMeetings');
+    meetings.value = response.data;
+    console.log(meetings.value);
+  } catch (error) {
+    console.error('获取会议列表失败:', error);
+  }
+};
+
+// 监听标签页变化
+const handleTabChange = (event) => {
+  if (event.target.getAttribute('href') === '#meetings-tab') {
+    fetchMeetings();
+  }
+};
+
 onMounted(() => {
   store.state.isAbsolute = true;
   setNavPills();
@@ -74,10 +95,16 @@ onMounted(() => {
   fetchUserData();
   
   // 初始化 Bootstrap 标签页
-  const tabList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'))
-  tabList.forEach(function (tab) {
-    new bootstrap.Tab(tab)
-  })
+  //const tabList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'))
+  //tabList.forEach(function (tab) {
+  //  new bootstrap.Tab(tab)
+  //})
+  
+  // 添加标签页切换事件监听
+  const tabList = document.querySelectorAll('[data-bs-toggle="tab"]');
+  tabList.forEach(tab => {
+    tab.addEventListener('shown.bs.tab', handleTabChange);
+  });
 });
 onBeforeMount(() => {
   store.state.imageLayout = "profile-overview";
@@ -93,6 +120,12 @@ onBeforeUnmount(() => {
   store.state.showFooter = true;
   store.state.hideConfigButton = false;
   body.classList.remove("profile-overview");
+  
+  // 移除标签页切换事件监听
+  const tabList = document.querySelectorAll('[data-bs-toggle="tab"]');
+  tabList.forEach(tab => {
+    tab.removeEventListener('shown.bs.tab', handleTabChange);
+  });
 });
 </script>
 <template>
@@ -248,31 +281,36 @@ onBeforeUnmount(() => {
                     <table class="table align-items-center mb-0">
                       <thead>
                         <tr>
-                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">会议名称</th>
-                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">日期时间</th>
-                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">状态</th>
-                          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">操作</th>
+                          <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7">会议名称</th>
+                          <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7 ps-2">开始时间</th>
+                          <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7 ps-2">结束时间</th>
+                          <th class="text-center text-uppercase text-secondary text-md font-weight-bolder opacity-7">会议主持</th>
+                          <th class="text-center text-uppercase text-secondary text-md font-weight-bolder opacity-7">查看详情</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
+                        <tr v-for="meeting in meetings" :key="meeting.meeting_id">
                           <td>
                             <div class="d-flex px-2 py-1">
                               <div class="d-flex flex-column justify-content-center">
-                                <h6 class="mb-0 text-sm">项目周会</h6>
+                                <h6 class="mb-0 text-md">{{ meeting.title }}</h6>
                               </div>
                             </div>
                           </td>
                           <td>
-                            <p class="text-xs font-weight-bold mb-0">2024-03-20 14:30</p>
+                            <p class="text-md font-weight-bold mb-0">{{ new Date(meeting.start_time).toLocaleString() }}</p>
                           </td>
-                          <td class="align-middle text-center text-sm">
-                            <span class="badge badge-sm bg-gradient-success">进行中</span>
+                          <td>
+                            <p class="text-md font-weight-bold mb-0">{{ new Date(meeting.end_time).toLocaleString() }}</p>
+                          </td>
+                          <td class="align-middle text-center text-md">
+                            <span class="badge badge-lg bg-gradient-info">{{ meeting.creator_id }}</span>
                           </td>
                           <td class="align-middle text-center">
-                            <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                            <a :href="meeting.video_url" target="_blank" class="text-secondary font-weight-bold text-md" >
                               查看详情
                             </a>
+                          
                           </td>
                         </tr>
                       </tbody>
