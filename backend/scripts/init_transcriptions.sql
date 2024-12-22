@@ -11,5 +11,5 @@ INSERT INTO meeting_participants (meeting_id, participant_id)
 VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', 'BL9PkGGttj4pS7J');
 
 -- 会议转录内容
-INSERT INTO transcriptions (meeting_id, task_id, task_status, content, timestamp, language,ischanged)
-VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', NULL, NULL, NULL, '2024-12-18 07:15:41', 'zh',NULL);
+INSERT INTO transcriptions (meeting_id, task_id, task_status, content, timestamp, language, speaker_count, ischanged)
+VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', NULL, NULL, NULL, '2024-12-18 07:15:41', 'zh',0,NULL);

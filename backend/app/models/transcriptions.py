@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text, Boolean
+from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text, Boolean, Integer
 from app.db.base import Base
 
 
@@ -11,4 +11,5 @@ class Transcription(Base):
     content = Column(Text, nullable=True)
     timestamp = Column(TIMESTAMP, nullable=False)
     language = Column(String(10), nullable=True)
+    speaker_count = Column(Integer, default=0, nullable=True)
     ischanged = Column(Boolean, default=False, nullable=True)
