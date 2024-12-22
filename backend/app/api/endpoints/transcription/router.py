@@ -11,6 +11,7 @@ from app.services.transcription import (
     create_task,
     poll_task_status,
     splicing,
+    splicing_second,
 )
 from app.db.session import get_db
 from app.models.meeting import Meeting, MeetingParticipants
@@ -82,6 +83,24 @@ def get_all_users(db: Session = Depends(get_db)):
     return users
 
 
+@router.get("/getParticipants", response_model=List[ParticipantResponse])
+def get_participants(meeting_id: str, db: Session = Depends(get_db)):
+    """
+    获取该会议所有参与者
+    """
+    participants = (
+        db.query(
+            User.user_id.label("participant_id"),
+            User.username.label("participant_name"),
+        )
+        .join(MeetingParticipants, MeetingParticipants.participant_id == User.user_id)
+        .filter(MeetingParticipants.meeting_id == meeting_id)
+        .all()
+    )
+
+    return participants
+
+
 @router.get("/getTransStatus")
 def get_tran_status(meeting_id: str, db: Session = Depends(get_db)):
     """
@@ -101,8 +120,10 @@ def get_tran_status(meeting_id: str, db: Session = Depends(get_db)):
         status = -1  # 如果转录内容不存在，返回 -1
         ischanged = False
         content = ""
+        speaker_count = 0
     else:
         ischanged = transcription.ischanged
+        speaker_count = transcription.speaker_count
         if transcription.task_status is None:
             status = 0  # 如果没有找到转录内容或 task_status 为 null，返回 0
         if transcription.task_status == "ONGOING":
@@ -115,17 +136,12 @@ def get_tran_status(meeting_id: str, db: Session = Depends(get_db)):
             content = transcription.content
     # 查询视频URL
     meeting = db.query(Meeting).filter(Meeting.meeting_id == meeting_id).first()
-    participant_count = (
-        db.query(MeetingParticipants)
-        .filter(MeetingParticipants.meeting_id == meeting_id)
-        .count()
-    )
     return {
         "status": status,
         "content": content,
         "video_url": meeting.video_url,
         "ischanged": ischanged,
-        "number": participant_count,
+        "speaker_count": speaker_count,
     }
 
 
@@ -160,7 +176,17 @@ async def upload_file(
     db.add(new_transcription)
     db.commit()
 
-    return meeting
+    meeting_response = MeetingResponse(
+        meeting_id=meeting.meeting_id,
+        title=meeting.title,
+        start_time=meeting.start_time,
+        end_time=meeting.end_time,
+        language=meeting.language,
+        creator_id=meeting.creator_id,
+        creator_name="",  # 添加创建者名称
+        video_url=meeting.video_url,
+    )
+    return meeting_response
 
 
 @router.post("/translate")
@@ -220,7 +246,7 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
         poll_response = poll_task_status(task_id)
 
         # 5. 调用splicing处理数据
-        content = splicing(poll_response)
+        content, speaker_count = splicing(poll_response)
 
         # 6. 保存splicing返回的内容
         transcription = (
@@ -231,6 +257,7 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
         if transcription:
             transcription.content = content
             transcription.task_status = "COMPLETED"
+            transcription.speaker_count = speaker_count
             thread_db.commit()
         thread_db.close()
 
@@ -238,3 +265,40 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
     threading.Thread(target=task_thread, daemon=True).start()
 
     return {"message": "Task started successfully", "task_id": task_id}
+
+
+@router.post("/setSpeaker")
+async def set_speaker(
+    meeting_id: str = Form(...),
+    speakers: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    try:
+        # 1. 根据 meeting_id 找到 task_id
+        transcription = (
+            db.query(Transcription)
+            .filter(Transcription.meeting_id == meeting_id)
+            .first()
+        )
+
+        task_id = transcription.task_id
+        print(speakers)
+        # 2. 调用 poll_task_status 来获取任务状态/转录内容
+        poll_response = poll_task_status(
+            task_id, 1
+        )  # 假设 poll_task_status 函数已经定义
+
+        # 3. 使用 splicingNew 函数处理转录数据
+        content = splicing_second(
+            poll_response, speakers
+        )  # 假设 splicingNew 函数已经定义
+
+        # 4. 将处理后的 content 保存到会议的 content 字段
+        transcription.content = content
+        transcription.ischanged = True
+        db.commit()
+
+        return {"message": "Speaker content updated successfully", "content": content}
+
+    except Exception as e:
+        print(e)

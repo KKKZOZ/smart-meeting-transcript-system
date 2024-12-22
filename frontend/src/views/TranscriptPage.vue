@@ -28,23 +28,43 @@
     <!-- 显示文本和音频播放器 -->
     <div v-else class="transcript-section">
       <div class="text-display">
-        <div class="left-text">
-          <h3>会议转录</h3><el-button v-if="!isChanged && isTranscribed === 2" type="primary" plain @click="dialogVisible = true">对应参会人员</el-button>
-          <el-dialog v-model="dialogVisible" title="Shipping address" width="500">
 
-          <template #footer>
-          <div class="dialog-footer">
-          <el-button @click="dialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="changeRoles">
-          Confirm
+        <div class="left-text" style="max-height: 60vh; overflow-y: auto;">
+          <h3>会议转录</h3>
+          <el-button
+            v-if="!isChanged && isTranscribed === 2"
+            type="primary"
+            plain
+            @click="() =>{dialogVisible = true;fetchParticipants();}">
+            对应参会人员
           </el-button>
-        </div>
-        </template>
+
+          <!-- 对话框 -->
+          <el-dialog v-model="dialogVisible" title="对应参会人员" width="500">
+            <div v-for="index in count" :key="index" style="margin-bottom: 16px;">
+              <div>发言人{{ index }}：</div>
+              <el-select
+                v-model="selections[index - 1]"
+                placeholder="请选择"
+                style="width: 240px">
+                <el-option
+                  v-for="option in speakerOptions"
+                  :key="option.value"
+                  :label="option.label"
+                  :value="option.value" />
+              </el-select>
+            </div>
+            <template #footer>
+              <div class="dialog-footer">
+                <el-button @click="dialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="changeRoles">确认</el-button>
+              </div>
+            </template>
           </el-dialog>
           <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ Text || '请点击生成文字' }}</pre>
           <el-button v-if="isTranscribed === 0" type="primary" @click="createTasks">生成文字</el-button>
         </div>
-        <div class="right-text">
+        <div class="right-text" style="max-height: 60vh; overflow-y: auto;">
           <h3>翻译</h3>
           <el-button v-if="[1, 2].includes(isTranscribed)" type="primary" class="translate-button" @click="translateTasks">翻译</el-button>
           <el-select
@@ -60,7 +80,7 @@
         :value="item.value"
       />
     </el-select>
-          <pre style="white-space: pre-wrap; word-wrap: break-word;" v-if="[1, 2].includes(isTranscribed)">{{ translateText || '请选择要翻译成的语言' }}</pre>
+          <pre style="white-space: pre-wrap; word-wrap: break-word;" v-if="[1,2].includes(isTranscribed)">{{ translateText || '请选择要翻译成的语言' }}</pre>
           <p v-if="[-1, 0].includes(isTranscribed)">{{'请先转录会议' }}</p>
         </div>
       </div>
@@ -91,15 +111,18 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const meetingId = route.query.meeting_id;
 console.log(route.query.meeting_id);
-const isTranscribed = ref(-1); // 默认状态是0，表示没有转录
+const isTranscribed = ref(-1); // 默认状态是-1，表示没有转录
 const audioSrc = ref('');
 let Text = ref('');
 let translateText = ref('');
 let isChanged = ref(false);
 let dialogVisible = ref(false)
 let fileToUpload = null; // 用于存储选中的文件
-let participantsNumber = ref(1);
+let count = ref(0)
+
 const value = ref('')
+const speakerOptions = ref([])
+const selections = ref(new Array(count.value).fill(null)); // 存储每个选择器的值
 const options = [
   {
     value: 'zh',
@@ -142,13 +165,27 @@ const getTranscriptionStatus = async () => {
     Text.value = response.data.content
     audioSrc.value = response.data.video_url
     isChanged.value = response.data.ischanged
-    participantsNumber.value = response.data.number
+    count.value = response.data.speaker_count
   } catch (error) {
     console.error('请求失败', error);
     ElMessage.error('获取转录状态失败');
   }
 };
 
+const fetchParticipants = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/getParticipants',{
+      params: { meeting_id: meetingId }
+    });// 请求用户数据的 API
+    speakerOptions.value = response.data.map(user => ({
+      value: user.participant_name, // 选项的值
+      label: user.participant_name, // 选项的标签
+    }));
+  } catch (error) {
+    console.error('Failed to fetch participants:', error);
+    alert('Failed to load participant options.');
+  }
+};
 
 // 组件加载时调用接口获取转录状态
 onMounted(() => {
@@ -190,27 +227,37 @@ const beforeUpload = (file) => {
 
 const changeRoles = async () => {
   try {
-    // 发送 POST 请求到后端的 /transcript 路由
+    // 构造 POST 请求的表单数据
     const formData = new FormData();
     formData.append('meeting_id', meetingId);
-    const response = await axios.post('http://localhost:8000/api/transcript', formData, {
+    formData.append('speakers', JSON.stringify(selections.value)); // 将选择器的值序列化为 JSON
+
+    // 发送请求到后端
+    const response = await axios.post('http://localhost:8000/api/setSpeaker', formData, {
       headers: {
         'Content-Type': 'multipart/form-data', // 设置表单数据类型
       },
     });
+
     console.log('Task started successfully:', response.data);
-    // 这里可以处理响应，例如提取返回的 task_id 等信息
+
+    Text.value = response.data.content;
+    dialogVisible.value = false;
+    getTranscriptionStatus();
+    // 处理成功响应，例如记录任务信息或更新 UI
   } catch (error) {
     console.error('Error creating task:', error);
+    // 处理错误，例如显示提示消息
   }
-  // console.log('Generating summary...');
 };
+
+
 // 其他按钮功能（保持不变）
 const createTasks = async () => {
   try {
     // 发送 POST 请求到后端的 /transcript 路由
     isTranscribed.value = 1;
-    Text.value = "正在转录中，请稍候。"
+    Text.value = "正在转录中，请稍候。系统会在转录完成后通知您，请在收到通知后刷新该页面查看内容。"
     const formData = new FormData();
     formData.append('meeting_id', meetingId);
     const response = await axios.post('http://localhost:8000/api/transcript', formData, {
@@ -269,7 +316,7 @@ const generateTasks = () => {
 
 .text-display {
   width: 100%;
-  height: 60vh; /* 设置固定高度为屏幕的 70% */
+  height: 65vh; /* 设置固定高度为屏幕的 70% */
   display: flex;
   justify-content: space-between;
   padding: 40px;
@@ -282,7 +329,6 @@ const generateTasks = () => {
 
 .text-display .left-text, .text-display .right-text {
   width: 45%; /* 保持左右两部分的宽度为 45% */
-
 }
 
 .text-display h3 {

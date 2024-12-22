@@ -202,12 +202,89 @@ def splicing(before_response):
         # 最后一个发言人的内容也要输出
         if current_sentence:
             result_text.append(f"发言人{current_speaker}: {''.join(current_sentence)}")
+        speaker_count = len(speaker_text)
+        # 将所有发言人的文本合并为最终的字符串并返回
+        return "\n".join(result_text), speaker_count
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+def splicing_second(before_response, speakers_json):
+    try:
+        # 解析 JSON 字符串为 Python 列表
+        speakers = json.loads(speakers_json)
+
+        # 创建一个字典，将索引作为键，发言人作为值
+        speakers_dict = {index + 1: speaker for index, speaker in enumerate(speakers)}
+
+        print(speakers_dict)
+        # 从返回的 JSON 中提取 URL
+        r = json.loads(before_response)
+        transcription_url = r.get("Data", {}).get("Result", {}).get("Transcription", "")
+
+        # 下载 JSON 文件并解析
+        response = requests.get(transcription_url)
+        transcription_data = response.json()  # 使用 .json() 方法解析返回的 JSON 内容
+
+        # 将所有 Words 存储到一个列表中，并记录发言人和时间
+        all_words = []
+
+        # 遍历所有段落
+        for paragraph in transcription_data["Transcription"]["Paragraphs"]:
+            speaker_id = paragraph["SpeakerId"]
+            for word in paragraph["Words"]:
+                all_words.append(
+                    {
+                        "SpeakerId": speaker_id,
+                        "Start": word["Start"],
+                        "Text": word["Text"],
+                    }
+                )
+
+        # 按照时间顺序对所有的单词进行排序
+        all_words.sort(key=lambda x: x["Start"])
+
+        # 按发言人分组文本
+        speaker_text = {}
+        for word in all_words:
+            speaker_id = word["SpeakerId"]
+            if speaker_id not in speaker_text:
+                speaker_text[speaker_id] = []
+            speaker_text[speaker_id].append(word["Text"])
+
+        # 按照时间顺序生成最终的文本
+        result_text = []
+        current_speaker = None
+        current_sentence = []
+        for word in all_words:
+            speaker_id = word["SpeakerId"]
+            # 如果当前发言人和上一个发言人不一样，就输出上一发言人的内容
+            if speaker_id != current_speaker:
+                if current_sentence:
+                    # 使用 speakers_dict 来替代原来的发言人编号
+                    speaker_name = speakers_dict.get(
+                        int(current_speaker), f"发言人{current_speaker}"
+                    )
+                    result_text.append(f"{speaker_name}: {''.join(current_sentence)}")
+                current_speaker = speaker_id
+                current_sentence = [word["Text"]]
+            else:
+                current_sentence.append(word["Text"])
+
+        # 最后一个发言人的内容也要输出
+        if current_sentence:
+            speaker_name = speakers_dict.get(
+                int(current_speaker), f"发言人{current_speaker}"
+            )
+            result_text.append(f"{speaker_name}: {''.join(current_sentence)}")
 
         # 将所有发言人的文本合并为最终的字符串并返回
         return "\n".join(result_text)
 
     except Exception as e:
         print(f"An error occurred: {e}")
+        return ""
 
 
 # 创建语音转文字任务

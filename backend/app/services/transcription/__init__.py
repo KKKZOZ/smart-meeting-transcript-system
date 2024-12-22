@@ -2,6 +2,7 @@ from .convert import (
     poll_task_status,
     splicing,
     create_task,
+    splicing_second,
 )
 
 from .translate import translate
@@ -13,4 +14,5 @@ __all__ = [
     "create_task",
     "translate",
     "upload",
+    "splicing_second",
 ]
