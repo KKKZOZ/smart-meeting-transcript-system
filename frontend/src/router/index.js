@@ -10,6 +10,7 @@ import Signin from "../views/Signin.vue";
 import NewPage from "../views/NewPage.vue";
 import TranscriptPage from "../views/TranscriptPage.vue";
 import CreateTrans from "../views/CreateTrans.vue";
+import Tasks from "../views/Tasks.vue";
 
 
 const routes = [
@@ -72,6 +73,11 @@ const routes = [
     path: '/create-trans',
     name: 'CreateTrans',
     component: CreateTrans
+  },
+  {
+    path: '/tasks',
+    name: 'tasks',
+    component: Tasks
   },
 ];
 
