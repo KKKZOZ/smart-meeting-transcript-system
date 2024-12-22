@@ -7,15 +7,15 @@ import CategoriesList from "./components/CategoriesList.vue";
     <div class="row">
       <div class="col-lg-12">
         <div class="row mt-4">
-          <div class="col-lg-5">
             <categories-list
+              title="Tasks"
               :categories="[
                 {
                   icon: {
                     component: 'ni ni-mobile-button',
                     background: 'dark',
                   },
-                  label: 'Devices',
+                  label: 'Task1',
                   description: '250 in stock <strong>346+ sold</strong>',
                 },
                 {
@@ -23,22 +23,21 @@ import CategoriesList from "./components/CategoriesList.vue";
                     component: 'ni ni-tag',
                     background: 'dark',
                   },
-                  label: 'Tickets',
+                  label: 'Task2',
                   description: '123 closed <strong>15 open</strong>',
                 },
                 {
                   icon: { component: 'ni ni-box-2', background: 'dark' },
-                  label: 'Error logs',
+                  label: 'Task3',
                   description: '1 is active <strong>40 closed</strong>',
                 },
                 {
                   icon: { component: 'ni ni-satisfied', background: 'dark' },
-                  label: 'Happy Users',
+                  label: 'Task4',
                   description: '+ 430',
                 },
               ]"
             />
-          </div>
         </div>
       </div>
     </div>
