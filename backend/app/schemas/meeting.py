@@ -35,3 +35,11 @@ class ParticipantResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class DeleteMeetingRequest(BaseModel):
+    meeting_id: str
+
+
+class SearchMeetingRequest(BaseModel):
+    keyword: str

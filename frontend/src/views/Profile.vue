@@ -63,7 +63,7 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('更新用户数据失败:', error);
     // TODO: 可以添加一个错误提示
-    alert('更新失败：' + (error.response?.data?.message || error.message));
+    alert('更新失败：' + (error.response?.data?.detail || error.message));
   }
 };
 
@@ -77,7 +77,7 @@ const fetchMeetings = async () => {
     meetings.value = response.data;
     console.log(meetings.value);
   } catch (error) {
-    console.error('获取会议列表失败:', error);
+    console.error('获取会议列表失败:', error.response?.data?.detail || error.message);
   }
 };
 
@@ -85,6 +85,36 @@ const fetchMeetings = async () => {
 const handleTabChange = (event) => {
   if (event.target.getAttribute('href') === '#meetings-tab') {
     fetchMeetings();
+  }
+};
+
+const handleDelete = async (meetingId) => {
+  if (confirm('确定要删除这个会议吗？')) {
+    try {
+      await axios.delete('/api/deleteMeeting', {
+        data: {
+          meeting_id: meetingId
+        }
+      });
+      // 重新获取会议列表
+      await fetchMeetings();
+    } catch (error) {
+      console.error('删除会议失败:', error.response?.data?.detail || error.message);
+      alert('删除失败：' + (error.response?.data?.detail || error.message));
+    }
+  }
+};
+
+const searchKeyword = ref('');
+
+const handleSearch = async () => {
+  try {
+    const response = await axios.post('/api/searchMeeting', {
+      keyword: searchKeyword.value
+    });
+    meetings.value = response.data;
+  } catch (error) {
+    console.error('搜索会议失败:', error.response?.data?.detail || error.message);
   }
 };
 
@@ -155,8 +185,8 @@ onBeforeUnmount(() => {
             </div>
             <div class="col-auto my-auto">
               <div class="h-100">
-                <h5 class="mb-1">Sayo Kravits</h5>
-                <p class="mb-0 font-weight-bold text-sm">Public Relations</p>
+                <h5 class="mb-1">{{ userData.username }}</h5>
+                <p class="mb-0 font-weight-bold text-sm">{{ userData.email }}</p>
               </div>
             </div>
             <div
@@ -273,19 +303,38 @@ onBeforeUnmount(() => {
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-header pb-0">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                   <h6>我的会议列表</h6>
+                  <div class="d-flex align-items-center gap-2" style="height: 40px;">
+                    <argon-input
+                      type="text"
+                      placeholder="搜索会议..."
+                      v-model="searchKeyword"
+                      @keyup.enter="handleSearch"
+                      class="w-auto mb-0"
+                      style="min-width: 200px;"
+                    />
+                    <argon-button
+                      color="info"
+                      size="sm"
+                      @click="handleSearch"
+                      class="mb-0 text-md"
+                      style="font-size: 0.875rem;"
+                    >
+                      <span class="text-md">搜索</span>
+                    </argon-button>
+                  </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                   <div class="table-responsive p-0">
                     <table class="table align-items-center mb-0">
                       <thead>
                         <tr>
-                          <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7">会议名称</th>
-                          <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7 ps-2">开始时间</th>
-                          <th class="text-uppercase text-secondary text-md font-weight-bolder opacity-7 ps-2">结束时间</th>
-                          <th class="text-center text-uppercase text-secondary text-md font-weight-bolder opacity-7">会议所有者</th>
-                          <th class="text-center text-uppercase text-secondary text-md font-weight-bolder opacity-7">查看详情</th>
+                          <th class="text-secondary text-md font-weight-bolder opacity-7">会议名称</th>
+                          <th class="text-secondary text-md font-weight-bolder opacity-7 ps-2">开始时间</th>
+                          <th class="text-secondary text-md font-weight-bolder opacity-7 ps-2">结束时间</th>
+                          <th class="text-center text-secondary text-md font-weight-bolder opacity-7">会议所有者</th>
+                          <th class="text-center text-secondary text-md font-weight-bolder opacity-7">操作</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -307,12 +356,21 @@ onBeforeUnmount(() => {
                             <span class="badge badge-lg bg-gradient-info">{{ meeting.creator_name }}</span>
                           </td>
                           <td class="align-middle text-center">
-                            <router-link 
-                              :to="`/transcript-page?meeting_id=${meeting.meeting_id}`"
-                              class="text-secondary font-weight-bold text-md"
-                            >
-                              查看详情
-                            </router-link>
+                            <div class="d-flex justify-content-center gap-3">
+                              <router-link 
+                                :to="`/transcript-page?meeting_id=${meeting.meeting_id}`"
+                                class="text-secondary font-weight-bold text-md"
+                              >
+                                查看详情
+                              </router-link>
+                              <a 
+                                href="javascript:;" 
+                                class="text-secondary font-weight-bold text-md"
+                                @click="handleDelete(meeting.meeting_id)"
+                              >
+                                删除
+                              </a>
+                            </div>
                           </td>
                         </tr>
                       </tbody>
