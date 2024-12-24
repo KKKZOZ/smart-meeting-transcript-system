@@ -20,7 +20,7 @@ module.exports = async ({ github, context, core }) => {
       .toString()
       .trim()
       .split("\n")
-      .filter((file) => file.startsWith("backend/api/"));
+      .filter((file) => file.startsWith("backend/"));
 
     console.log("Changed files:", changedFiles);
 
