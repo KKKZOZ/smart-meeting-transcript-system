@@ -19,6 +19,7 @@ from app.services.notification import (
 )
 from app.core.security import get_current_user
 from app.models.notifications import NotificationStatus
+from app.models.user import User
 
 router = APIRouter()
 
@@ -97,9 +98,14 @@ async def update_notification_status_route(
     return db_notification
 
 
-@router.get("/notifications/users/{user_id}", response_model=List[NotificationResponse])
+@router.get("/notifications/users", response_model=List[NotificationResponse])
 async def get_notifications_by_user_id_route(
-    user_id: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """根据 user_id 获取通知列表"""
-    return get_notifications_by_user_id(db=db, user_id=user_id, skip=skip, limit=limit)
+    return get_notifications_by_user_id(
+        db=db, user_id=current_user.user_id, skip=skip, limit=limit
+    )
