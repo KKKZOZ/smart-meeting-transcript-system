@@ -36,8 +36,6 @@ class Notification(Base):
             f"task_id={self.task_id}, "
             f"status={self.status.value}, "  # 使用 .value 获取枚举值
             f"ddl={self.ddl.strftime('%Y-%m-%d %H:%M:%S') if self.ddl else None}, "  # 格式化时间
-            f"content={self.content[:50]}..."
-            if self.content and len(self.content) > 50
-            else f"content={self.content}"  # 截断过长的 content
+            f"content={'...'.join([self.content[:50]]) if self.content and len(self.content) > 50 else self.content}"
             f")"
         )

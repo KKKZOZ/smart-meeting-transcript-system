@@ -76,7 +76,9 @@ async def create_notification_route(
 
 
 @router.get("/notifications/{notification_id}", response_model=NotificationResponse)
-async def read_notification_route(notification_id: str, db: Session = Depends(get_db)):
+async def read_notification_by_id_route(
+    notification_id: str, db: Session = Depends(get_db)
+):
     """获取单个通知"""
     db_notification = get_notification(db=db, notification_id=notification_id)
     if not db_notification:
@@ -85,7 +87,7 @@ async def read_notification_route(notification_id: str, db: Session = Depends(ge
 
 
 @router.get("/notifications", response_model=List[NotificationResponse])
-async def read_notifications_route(
+async def read_all_notifications_route(
     skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ):
     """获取通知列表"""

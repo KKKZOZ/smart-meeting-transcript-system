@@ -20,3 +20,14 @@ class Summary(Base):
     )
     language = Column(String(10), nullable=False)
     generated_at = Column(TIMESTAMP, nullable=False, default=datetime.now)
+
+    def __str__(self):
+        return (
+            f"Summary(\n"
+            f"  meeting_id={self.meeting_id},\n"
+            f"  content='{self.content}',\n"
+            f"  SummaryType={self.SummaryType},\n"
+            f"  language={self.language},\n"
+            f"  generated_at={self.generated_at}\n"
+            f")"
+        )
