@@ -15,6 +15,7 @@
 
     const userData = ref({
         username: '',
+        nickname: '',
         email: '',
         notification_type: '',
         frequency: '',
@@ -43,6 +44,7 @@
             const updateData = {
                 username: userData.value.username,
                 email: userData.value.email,
+                nickname: userData.value.nickname,
                 notification_type: userData.value.notification_type,
                 frequency: userData.value.frequency,
             };
@@ -193,7 +195,7 @@
                         </div>
                         <div class="col-auto my-auto">
                             <div class="h-100">
-                                <h5 class="mb-1">{{ userData.username }}</h5>
+                                <h5 class="mb-1">{{ userData.username }}({{ userData.nickname }})</h5>
                                 <p class="mb-0 font-weight-bold text-sm">
                                     {{ userData.email }}
                                 </p>
@@ -271,6 +273,14 @@
                                                 >Email address</label
                                             >
                                             <argon-input type="email" v-model="userData.email" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label
+                                                for="example-text-input"
+                                                class="form-control-label"
+                                                >Nickname</label
+                                            >
+                                            <argon-input type="text" v-model="userData.nickname" />
                                         </div>
                                         <div class="col-md-4">
                                             <label

@@ -18,6 +18,7 @@
         username: '',
         email: '',
         password: '',
+        nickname: '',
     });
 
     // 错误信息
@@ -32,6 +33,7 @@
                 username: formData.value.username,
                 email: formData.value.email,
                 password: formData.value.password,
+                nickname: formData.value.nickname,
             });
 
             console.log('Register Response:', response);
@@ -212,6 +214,13 @@
                                     placeholder="Name"
                                     aria-label="Name"
                                     v-model="formData.username"
+                                />
+                                <argon-input
+                                    id="nickname"
+                                    type="text"
+                                    placeholder="Nickname"
+                                    aria-label="Nickname"
+                                    v-model="formData.nickname"
                                 />
                                 <argon-input
                                     id="email"

@@ -60,10 +60,16 @@ async def register(user_in: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="邮箱已存在"
         )
+    db_user = db.query(User).filter(User.nickname == user_in.nickname).first()
+    if db_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="昵称已存在"
+        )
 
     user = User(
         user_id=generate_user_id(),
         username=user_in.username,
+        nickname=user_in.nickname,
         hashed_password=get_password_hash(user_in.password),
         email=user_in.email,
     )
@@ -108,6 +114,14 @@ async def update_user_profile(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="邮箱已存在"
             )
 
+    # 检查昵称是否已存在（如果要更新昵称的话）
+    if user_update.nickname and user_update.nickname != current_user.nickname:
+        db_user = db.query(User).filter(User.nickname == user_update.nickname).first()
+        if db_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="昵称已存在"
+            )
+
     # 更新用户信息
     update_data = user_update.model_dump(exclude_unset=True)
 
@@ -129,6 +143,7 @@ async def update_user_profile(
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
     return {
         "username": current_user.username,
+        "nickname": current_user.nickname,
         "email": current_user.email,
         "notification_type": current_user.notification_type,
         "frequency": current_user.frequency,

@@ -7,6 +7,7 @@ class UserBase(BaseModel):
     """用户基础模型"""
 
     username: str
+    nickname: str
     email: Optional[str] = None
 
     @classmethod
@@ -41,15 +42,9 @@ class Token(BaseModel):
     token_type: str
 
 
-class TokenData(BaseModel):
-    """令牌数据模型"""
-
-    username: Optional[str] = None
-
-
 class UserUpdate(UserBase):
     """用户信息更新模型"""
 
     password: Optional[str] = None
-    notification_type: Optional[str] = None
+    notification_type: Optional[bool] = None
     frequency: Optional[str] = None

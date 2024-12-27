@@ -1,5 +1,4 @@
 from passlib.context import CryptContext
-import json
 import os
 import random
 import string
@@ -20,8 +19,8 @@ def generate_sql_commands(users_data: list) -> str:
     for user in users_data:
         hashed_password = generate_password_hash(user["password"])
         sql = f"""-- 插入用户 (密码: {user["password"]})
-INSERT INTO users (user_id,username, hashed_password, email) VALUES 
-('{generate_user_id()}','{user["username"]}', '{hashed_password}', '{user["email"]}');
+INSERT INTO users (user_id,username, hashed_password, email,nickname,notification_type,enabled) VALUES 
+('{generate_user_id()}','{user["username"]}', '{hashed_password}', '{user["email"]}', '{user["nickname"]}',1,1);
 """
         sql_commands.append(sql)
 
@@ -36,10 +35,36 @@ def generate_user_id() -> str:
 def main():
     # 预设用户数据
     users = [
-        {"username": "admin", "password": "admin123", "email": "admin@example.com"},
-        {"username": "test", "password": "test123", "email": "test@example.com"},
-        {"username": "user1", "password": "test123", "email": "user1@example.com"},
-        {"username": "user2", "password": "test123", "email": "user2@example.com"},
+        {
+            "username": "admin",
+            "password": "admin123",
+            "email": "admin@example.com",
+            "nickname": "张经理",
+        },
+        {
+            "username": "test",
+            "password": "test123",
+            "email": "test@example.com",
+            "nickname": "李主管",
+        },
+        {
+            "username": "user1",
+            "password": "test123",
+            "email": "user1@example.com",
+            "nickname": "王专员",
+        },
+        {
+            "username": "user2",
+            "password": "test123",
+            "email": "user2@example.com",
+            "nickname": "赵助理",
+        },
+        {
+            "username": "user3",
+            "password": "test123",
+            "email": "user3@example.com",
+            "nickname": "刘分析师",
+        },
     ]
 
     # 生成SQL命令
@@ -53,14 +78,8 @@ def main():
     with open(sql_file_path, "w", encoding="utf-8") as f:
         f.write(sql_content)
 
-    # 同时保存一个用户信息的JSON文件，方便查看
-    users_file_path = os.path.join(current_dir, "users.json")
-    with open(users_file_path, "w", encoding="utf-8") as f:
-        json.dump(users, f, indent=2, ensure_ascii=False)
-
     print("文件生成完成！")
     print(f"SQL文件已保存到: {sql_file_path}")
-    print(f"用户信息已保存到: {users_file_path}")
     print("\n预设用户:")
     for user in users:
         print(f"- {user['username']} / {user['password']}")
