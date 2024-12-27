@@ -5,7 +5,11 @@ from app.db.base import Base
 class Transcription(Base):
     __tablename__ = "transcriptions"
 
-    meeting_id = Column(String(50), ForeignKey("meetings.meeting_id"), primary_key=True)
+    meeting_id = Column(
+        String(50),
+        ForeignKey("meetings.meeting_id", ondelete="CASCADE"),
+        primary_key=True,
+    )
     task_id = Column(String(50), nullable=True)
     task_status = Column(String(10), nullable=True)
     content = Column(Text, nullable=True)

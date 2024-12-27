@@ -6,7 +6,11 @@ from datetime import datetime
 class Summary(Base):
     __tablename__ = "summaries"
 
-    meeting_id = Column(String(50), ForeignKey("meetings.meeting_id"), primary_key=True)
+    meeting_id = Column(
+        String(50),
+        ForeignKey("meetings.meeting_id", ondelete="CASCADE"),
+        primary_key=True,
+    )
     content = Column(Text, nullable=False)
     SummaryType = Column(
         Enum(

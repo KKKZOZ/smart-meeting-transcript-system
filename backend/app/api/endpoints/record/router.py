@@ -69,15 +69,8 @@ def delete_meeting(
         raise HTTPException(status_code=403, detail="只有会议创建者可以删除会议")
 
     try:
-        # 首先删除会议参与者记录
-        db.query(MeetingParticipants).filter(
-            MeetingParticipants.meeting_id == request.meeting_id
-        ).delete()
-
-        # 删除会议记录
+        # 直接删除会议记录，所有相关记录会自动被删除
         db.query(Meeting).filter(Meeting.meeting_id == request.meeting_id).delete()
-
-        # 提交事务
         db.commit()
 
         return {"message": "会议删除成功"}
