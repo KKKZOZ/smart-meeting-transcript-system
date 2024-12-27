@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     BAIDU_APP_ID: str
     BAIDU_APP_KEY: str
 
+    OPENAI_API_KEY: str
+    OPENAI_API_BASE: str
+
     # 数据库连接URL
     DATABASE_URL: str  # = "mysql+pymysql://root:123456@localhost/gjrcdemo"
 
