@@ -4,7 +4,6 @@
     import { useStore } from 'vuex';
 
     import SidenavItem from './SidenavItem.vue';
-    import SidenavCard from './SidenavCard.vue';
 
     const store = useStore();
     const isRTL = computed(() => store.state.isRTL);
@@ -42,7 +41,7 @@
                 </sidenav-item>
             </li>
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <sidenav-item
                     to="/new-page"
                     :class="getRoute() === 'new-page' ? 'active' : ''"
@@ -52,7 +51,7 @@
                         <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
                     </template>
                 </sidenav-item>
-            </li>
+            </li> -->
 
             <li class="nav-item">
                 <sidenav-item
@@ -90,7 +89,7 @@
                 </sidenav-item>
             </li>
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <sidenav-item
                     to="/billing"
                     :class="getRoute() === 'billing' ? 'active' : ''"
@@ -100,9 +99,9 @@
                         <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
                     </template>
                 </sidenav-item>
-            </li>
+            </li> -->
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <sidenav-item
                     to="/virtual-reality"
                     :class="getRoute() === 'virtual-reality' ? 'active' : ''"
@@ -112,7 +111,7 @@
                         <i class="ni ni-app text-info text-sm opacity-10"></i>
                     </template>
                 </sidenav-item>
-            </li>
+            </li> -->
 
             <!-- <li class="nav-item">
         <sidenav-item to="/rtl-page" :class="getRoute() === 'rtl-page' ? 'active' : ''" navText="RTL">
@@ -178,7 +177,7 @@
         </ul>
     </div>
 
-    <div class="pt-3 mx-3 mt-3 sidenav-footer">
+    <!-- <div class="pt-3 mx-3 mt-3 sidenav-footer">
         <sidenav-card
             :card="{
                 title: 'Need Help?',
@@ -197,5 +196,5 @@
                 ],
             }"
         />
-    </div>
+    </div> -->
 </template>
