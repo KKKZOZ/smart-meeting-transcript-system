@@ -2,8 +2,8 @@
     import { computed } from 'vue';
     import { useStore } from 'vuex';
     import SidenavList from './SidenavList.vue';
-    import logo from '@/assets/img/logo-ct-dark.png';
-    import logoWhite from '@/assets/img/logo-ct.png';
+    // import logo from '@/assets/img/logo-ct-dark.png';
+    // import logoWhite from '@/assets/img/logo-ct.png';
 
     const store = useStore();
     const isRTL = computed(() => store.state.isRTL);
@@ -32,13 +32,13 @@
             ></i>
 
             <router-link class="m-0 navbar-brand" to="/">
-                <img
+                <!-- <img
                     :src="darkMode || sidebarType === 'bg-default' ? logoWhite : logo"
-                    class="navbar-brand-img h-100"
+                    class="navbar-brand-img h-50"
                     alt="main_logo"
-                />
+                /> -->
 
-                <span class="ms-2 font-weight-bold me-2">Argon Dashboard 2</span>
+                <span class="ms-2 font-weight-bold me-2">Smart Meeting Transcript Sys</span>
             </router-link>
         </div>
 
