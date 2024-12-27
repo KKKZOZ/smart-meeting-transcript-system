@@ -5,8 +5,8 @@ from enum import Enum as PyEnum
 
 
 class NotificationStatus(PyEnum):
-    READ = "read"
-    UNREAD = "unread"
+    READ = "READ"
+    UNREAD = "UNREAD"
 
 
 class Notification(Base):
@@ -24,3 +24,20 @@ class Notification(Base):
         nullable=False,
         default=NotificationStatus.UNREAD,
     )
+
+    def __str__(self):
+        """
+        返回一个对用户友好的字符串表示，用于 print() 函数。
+        """
+        return (
+            f"Notification("
+            f"notification_id={self.notification_id}, "
+            f"user_id={self.user_id}, "
+            f"task_id={self.task_id}, "
+            f"status={self.status.value}, "  # 使用 .value 获取枚举值
+            f"ddl={self.ddl.strftime('%Y-%m-%d %H:%M:%S') if self.ddl else None}, "  # 格式化时间
+            f"content={self.content[:50]}..."
+            if self.content and len(self.content) > 50
+            else f"content={self.content}"  # 截断过长的 content
+            f")"
+        )

@@ -9,6 +9,11 @@ class Settings(BaseSettings):
     所有配置项都可以通过环境变量覆盖
     """
 
+    SMTP_SERVER: str
+    SMTP_PORT: str
+    SENDER_EMAIL: str
+    SENDER_PASSWORD: str
+
     ALIBABA_ACCESS_KEY_ID: str
     ALIBABA_ACCESS_KEY_SECRET: str
 

@@ -13,3 +13,11 @@ class Transcription(Base):
     language = Column(String(10), nullable=True)
     speaker_count = Column(Integer, default=0, nullable=True)
     ischanged = Column(Boolean, default=False, nullable=True)
+
+    def __str__(self):
+        return (
+            f"Transcription(meeting_id={self.meeting_id}, task_id={self.task_id}, "
+            f"task_status={self.task_status}, content={self.content[:50] if self.content else None}... , "
+            f"timestamp={self.timestamp}, language={self.language}, "
+            f"speaker_count={self.speaker_count}, ischanged={self.ischanged})"
+        )

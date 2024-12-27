@@ -5,11 +5,9 @@ from app.models.notifications import NotificationStatus
 
 
 class NotificationCreate(BaseModel):
-    user_id: str
     task_id: str
     content: str
     ddl: datetime
-    status: NotificationStatus
 
 
 class NotificationUpdate(BaseModel):

@@ -24,3 +24,10 @@ class User(Base):
     frequency = Column(String(20))
 
     enabled = Column(Boolean, default=True)
+
+    def __str__(self):
+        return (
+            f"User(user_id={self.user_id}, username={self.username}, "
+            f"email={self.email}, notification_type={self.notification_type}, "
+            f"frequency={self.frequency}, enabled={self.enabled})"
+        )

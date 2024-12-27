@@ -1,7 +1,7 @@
 
 -- 插入用户 (密码: admin123)
 INSERT INTO users (user_id,username, hashed_password, email) VALUES 
-('WZIuMvWHhZCIiJA','admin', '$2b$12$NnG4Sxw267FV0m4oXpdGK.SdarNx5NgslvQPiwyC1UNVtakSO3M96', 'admin@example.com');
+('WZIuMvWHhZCIiJA','admin', '$2b$12$NnG4Sxw267FV0m4oXpdGK.SdarNx5NgslvQPiwyC1UNVtakSO3M96', 'kkkzoz@163.com');
 
 -- 插入用户 (密码: test123)
 INSERT INTO users (user_id,username, hashed_password, email) VALUES 

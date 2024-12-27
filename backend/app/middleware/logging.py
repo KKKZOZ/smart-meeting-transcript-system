@@ -23,7 +23,7 @@ logger.setLevel(INFO)
 logger.addHandler(handler)
 
 # 同时输出到控制台
-# console_handler = logging.StreamHandler(sys.stdout)
+# console_handler = StreamHandler(sys.stdout)
 # console_handler.setFormatter(formatter)
 # logger.addHandler(console_handler)
 
