@@ -16,11 +16,32 @@ module.exports = async ({ github, context, core }) => {
     const pusher = context.payload.pusher.name;
     console.log("Current pusher:", pusher);
 
+    // 首先读取并解析 CODEOWNERS
+    const codeownersContent = fs.readFileSync(".github/CODEOWNERS", "utf8");
+    console.log("CODEOWNERS content:", codeownersContent);
+
+    const codeowners = codeownersContent
+      .split("\n")
+      .filter((line) => line && !line.startsWith("#"))
+      .map((line) => {
+        const [pattern, ...owners] = line.trim().split(/\s+/);
+        return {
+          pattern: pattern,
+          regex: patternToRegex(pattern),
+          owners: owners.map((o) => o.replace("@", "")),
+        };
+      });
+
+    console.log("Parsed CODEOWNERS:", codeowners);
+
+    // 获取更改的文件并根据 CODEOWNERS 规则过滤
     const changedFiles = execSync("git diff --name-only HEAD^ HEAD")
       .toString()
       .trim()
       .split("\n")
-      .filter((file) => file.startsWith("backend/"));
+      .filter((file) => {
+        return codeowners.some(({ regex }) => regex.test(file));
+      });
 
     console.log("Changed files:", changedFiles);
 
@@ -48,23 +69,6 @@ module.exports = async ({ github, context, core }) => {
       }
     });
 
-    const codeownersContent = fs.readFileSync(".github/CODEOWNERS", "utf8");
-    console.log("CODEOWNERS content:", codeownersContent);
-
-    const codeowners = codeownersContent
-      .split("\n")
-      .filter((line) => line && !line.startsWith("#"))
-      .map((line) => {
-        const [pattern, ...owners] = line.trim().split(/\s+/);
-        return {
-          pattern: pattern,
-          regex: patternToRegex(pattern),
-          owners: owners.map((o) => o.replace("@", "")),
-        };
-      });
-
-    console.log("Parsed CODEOWNERS:", codeowners);
-
     const usersToNotify = new Set();
     changedFiles.forEach((file) => {
       codeowners.forEach(({ pattern, regex, owners }) => {
@@ -73,7 +77,6 @@ module.exports = async ({ github, context, core }) => {
           owners
             .filter((owner) => owner.toLowerCase() !== pusher.toLowerCase())
             .forEach((owner) => usersToNotify.add(owner));
-          //   owners.forEach((owner) => usersToNotify.add(owner));
         }
       });
     });
