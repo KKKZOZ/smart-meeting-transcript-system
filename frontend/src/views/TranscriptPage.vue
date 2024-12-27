@@ -3,11 +3,11 @@
         <!-- 控制显示上传组件还是文本和播放器 -->
         <div v-if="isTranscribed === -1" class="upload-section">
             <el-upload
-                class="upload-demo"
+                class="upload"
                 drag
                 :before-upload="beforeUpload"
                 accept="audio/*"
-                :show-file-list="true"
+                :limit="1"
             >
                 <el-icon class="el-icon--upload">
                     <UploadFilled />
@@ -17,6 +17,9 @@
                     <div class="el-upload__tip">Upload audio files (MP3 or WAV, under 50MB)</div>
                 </template>
             </el-upload>
+            <div v-if="fileToUpload" class="selected-file">
+                <p>已选择文件：{{ fileToUpload.name }}</p>
+            </div>
             <!-- 上传按钮 -->
             <el-button type="primary" @click="handleUpload">开始上传</el-button>
         </div>
@@ -27,7 +30,7 @@
                 <div class="left-text" style="max-height: 60vh; overflow-y: auto">
                     <h3>会议转录</h3>
                     <el-button
-                        v-if="!isChanged && isTranscribed === 2"
+                        v-if="isTranscribed === 2"
                         type="primary"
                         plain
                         @click="
@@ -73,13 +76,6 @@
                 </div>
                 <div class="right-text" style="max-height: 60vh; overflow-y: auto">
                     <h3>翻译</h3>
-                    <el-button
-                        v-if="[1, 2].includes(isTranscribed)"
-                        type="primary"
-                        class="translate-button"
-                        @click="translateTasks"
-                        >翻译</el-button
-                    >
                     <el-select
                         v-model="value"
                         v-if="[1, 2].includes(isTranscribed)"
@@ -93,6 +89,13 @@
                             :value="item.value"
                         />
                     </el-select>
+                    <el-button
+                        v-if="[1, 2].includes(isTranscribed)"
+                        type="primary"
+                        class="translate-button"
+                        @click="translateTasks"
+                        >翻译</el-button
+                    >
                     <pre
                         style="white-space: pre-wrap; word-wrap: break-word"
                         v-if="[1, 2].includes(isTranscribed)"
@@ -138,7 +141,7 @@
     let translateText = ref('');
     let isChanged = ref(false);
     let dialogVisible = ref(false);
-    let fileToUpload = null; // 用于存储选中的文件
+    let fileToUpload = ref(null); // 用于存储选中的文件
     let count = ref(0);
 
     const value = ref('');
@@ -215,10 +218,10 @@
 
     // 处理上传的文件
     const handleUpload = () => {
-        if (fileToUpload) {
+        if (fileToUpload.value) {
             // 创建 FormData 并附加文件
             const formData = new FormData();
-            formData.append('file', fileToUpload);
+            formData.append('file', fileToUpload.value);
             formData.append('meeting_id', meetingId);
 
             // 手动上传文件到后端
@@ -243,7 +246,7 @@
 
     // 修改beforeUpload以便用户选择文件后，触发handleUpload
     const beforeUpload = file => {
-        fileToUpload = file;
+        fileToUpload.value = file;
         return false; // 阻止自动上传
     };
 
