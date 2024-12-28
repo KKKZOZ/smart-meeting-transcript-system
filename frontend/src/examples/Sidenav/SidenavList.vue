@@ -79,6 +79,18 @@
 
             <li class="nav-item">
                 <sidenav-item
+                    to="/summary"
+                    :class="getRoute() === 'summary' ? 'active' : ''"
+                    :navText="isRTL ? 'صفحة جديدة' : 'Summary'"
+                >
+                    <template v-slot:icon>
+                        <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
+                    </template>
+                </sidenav-item>
+            </li>
+
+            <li class="nav-item">
+                <sidenav-item
                     to="/tasks"
                     :class="getRoute() === 'tasks' ? 'active' : ''"
                     :navText="isRTL ? 'صفحة جديدة' : 'Tasks'"

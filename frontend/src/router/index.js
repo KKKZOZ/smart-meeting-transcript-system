@@ -10,6 +10,7 @@ import Signin from '../views/Signin.vue';
 import NewPage from '../views/NewPage.vue';
 import TranscriptPage from '../views/TranscriptPage.vue';
 import CreateTrans from '../views/CreateTrans.vue';
+import Summary from '../views/Summary.vue';
 import Tasks from '../views/Tasks.vue';
 import Notifications from '../views/Notifications.vue';
 
@@ -73,6 +74,11 @@ const routes = [
         path: '/create-trans',
         name: 'CreateTrans',
         component: CreateTrans,
+    },
+    {
+        path: '/summary',
+        name: 'summary',
+        component: Summary,
     },
     {
         path: '/tasks',
