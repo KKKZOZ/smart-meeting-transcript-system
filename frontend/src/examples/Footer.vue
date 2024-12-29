@@ -12,7 +12,7 @@
                         :class="store.state.isRTL ? 'text-lg-end' : 'text-lg-start'"
                     >
                         ©
-                        {{ new Date().getFullYear() }}, made with ASWE Group
+                        {{ new Date().getFullYear() }}, ASWE Group
                     </div>
                 </div>
                 <div class="col-lg-6"> </div>
