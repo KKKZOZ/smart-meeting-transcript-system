@@ -13,10 +13,12 @@ from app.services.transcription import (
     splicing,
     splicing_second,
 )
+from app.services.notification import send_notification_email
 from app.db.session import get_db
 from app.models.meeting import Meeting, MeetingParticipants
 from app.models.transcriptions import Transcription
 from app.models.user import User
+from app.models.notifications import Notification
 from app.schemas.meeting import MeetingCreate, MeetingResponse, ParticipantResponse
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
@@ -91,7 +93,7 @@ def get_participants(meeting_id: str, db: Session = Depends(get_db)):
     participants = (
         db.query(
             User.user_id.label("participant_id"),
-            User.username.label("participant_name"),
+            User.nickname.label("participant_name"),
         )
         .join(MeetingParticipants, MeetingParticipants.participant_id == User.user_id)
         .filter(MeetingParticipants.meeting_id == meeting_id)
@@ -259,6 +261,38 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
             transcription.task_status = "COMPLETED"
             transcription.speaker_count = speaker_count
             thread_db.commit()
+
+        # 给每一个参与者发送邮件
+        meeting_participants = (
+            thread_db.query(MeetingParticipants)
+            .filter(MeetingParticipants.meeting_id == meeting_id)
+            .all()
+        )
+
+        for participant in meeting_participants:
+            # 创建通知实体
+            notification = Notification(
+                user_id=participant.participant_id,
+                task_id="",
+                content=f"会议 {meeting_id} 的转录任务已完成。请查看转录内容。",
+                ddl="",  # 假设通知有效期为7天
+                status="",
+            )
+
+            # 根据用户 ID 查询邮箱地址
+            user = (
+                thread_db.query(User)
+                .filter(User.user_id == participant.participant_id)
+                .first()
+            )
+
+            # 发送邮件
+            success = send_notification_email(notification, user.email)
+            if success:
+                print(f"Email sent successfully to {user.email}")
+            else:
+                print(f"Failed to send email to {user.email}")
+
         thread_db.close()
 
     # 启动新线程执行任务
