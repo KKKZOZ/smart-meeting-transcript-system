@@ -1,7 +1,18 @@
 <template>
     <div class="container">
         <!-- 新增按钮 -->
-        <button @click="addTask" class="search-btn">新增待办事项</button>
+        <div>
+            <!-- 下拉按钮 -->
+            <button @click="toggleDropdown" class="search-btn">
+                新增待办事项
+            </button>
+
+            <!-- 下拉菜单 -->
+            <div v-if="dropdownVisible" class="dropdown-menu">
+                <button @click="addTask" class="dropdown-item">从空白事项添加</button>
+                <button @click="addByExtract" class="dropdown-item">从会议记录提取</button>
+            </div>
+        </div>
 
         <!-- 两个切换按钮 -->
         <div class="button-group">
@@ -32,6 +43,7 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import axios from '@/axios';
+    import router from '../router';
 
     // 表格数据
     var tableData = ref([]);
@@ -39,16 +51,28 @@
     // 用于保存搜索数据
     var searchData = ref(null);
 
+    // 下拉菜单控制
+    var dropdownVisible = ref(false);
+
+    const toggleDropdown = () => {
+        dropdownVisible.value = !dropdownVisible.value; // 切换下拉菜单显示
+    };
+
     // 搜索按钮点击后获取数据
     const addTask = async () => {
         try {
             // 发起 GET 请求，从后端获取数据（假设后端接口为 /api/data）
             const response = await axios.post('/api/llm_extraction'); // 示例接口
             searchData.value = response.data; // 保存搜索结果，但不填充表格
+            alert(response.data)
         } catch (error) {
             console.error('获取数据失败', error);
             alert('数据获取失败');
         }
+    };
+
+    const addByExtract = () => {
+        router.push("/extract-tasks-from-meetings");
     };
 
     // 独立的函数用来填充表格内容 A
@@ -159,5 +183,35 @@
     p {
         font-size: 16px;
         color: #555;
+    }
+
+
+    .search-btn:hover {
+        background-color: #45a049;
+        /* 鼠标悬停时的背景色 */
+    }
+
+    .dropdown-menu {
+        display: block;
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-top: 5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item {
+        padding: 10px 20px;
+        background-color: white;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f1f1f1;
+        /* 鼠标悬停时的背景色 */
     }
 </style>

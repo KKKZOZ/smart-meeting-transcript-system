@@ -13,6 +13,7 @@ import CreateTrans from '../views/CreateTrans.vue';
 import Summary from '../views/Summary.vue';
 import Tasks from '../views/Tasks.vue';
 import Notifications from '../views/Notifications.vue';
+import ExtractTasksFromMeetings from '../views/ExtractTasksFromMeetings.vue';
 // import SummaryCreate from '../views/SummaryCreate.vue';
 
 const routes = [
@@ -85,6 +86,11 @@ const routes = [
         path: '/tasks',
         name: 'tasks',
         component: Tasks,
+    },
+    {
+        path: '/extract-tasks-from-meetings',
+        name: 'extract-tasks-from-meetings',
+        component: ExtractTasksFromMeetings,
     },
     {
         path: '/notifications',
