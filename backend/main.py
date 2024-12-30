@@ -5,6 +5,7 @@ from app.api.endpoints.notification.router import router as notification_router
 from app.api.endpoints.demo.router import router as demo_router
 from app.api.endpoints.transcription.router import router as transcription_router
 from app.api.endpoints.record.router import router as record_router
+from app.api.endpoints.summaries.router import router as summaries_router
 from app.middleware.logging import log_request_middleware
 
 app = FastAPI(
@@ -29,3 +30,4 @@ app.include_router(notification_router, prefix="/api", tags=["通知"])
 app.include_router(demo_router, prefix="/api", tags=["演示"])
 app.include_router(transcription_router, prefix="/api", tags=["创建会议"])
 app.include_router(record_router, prefix="/api", tags=["会议记录"])
+app.include_router(summaries_router, prefix="/api", tags=["生成摘要"])

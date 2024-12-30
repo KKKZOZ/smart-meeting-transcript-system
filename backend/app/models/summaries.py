@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text, Enum
+from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text, Integer
 from app.db.base import Base
 from datetime import datetime
 
@@ -6,32 +6,25 @@ from datetime import datetime
 class Summary(Base):
     __tablename__ = "summaries"
 
+    summary_id = Column(Integer, primary_key=True)
     meeting_id = Column(
         String(50),
-        ForeignKey("meetings.meeting_id", ondelete="CASCADE"),
-        primary_key=True,
+        ForeignKey("meetings.meeting_id", ondelete="CASCADE")
     )
     content = Column(Text, nullable=False)
-    SummaryType = Column(
-        Enum(
-            "简要概述",
-            "决策事项",
-            "正式(语言风格)",
-            "非正式(语言风格)",
-            name="summary_type",
-        ),
-        nullable=False,
+    summary_type = Column(
+        String(21345),
+        default="简要概述"  
     )
-    language = Column(String(10), nullable=False)
     generated_at = Column(TIMESTAMP, nullable=False, default=datetime.now)
 
     def __str__(self):
         return (
             f"Summary(\n"
+            f"  summary_id={self.summary_id},\n"
             f"  meeting_id={self.meeting_id},\n"
             f"  content='{self.content}',\n"
-            f"  SummaryType={self.SummaryType},\n"
-            f"  language={self.language},\n"
+            f"  summary_type={self.summary_type},\n"
             f"  generated_at={self.generated_at}\n"
             f")"
         )
