@@ -23,12 +23,11 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     OPENAI_API_BASE: str
 
-    SPARKAI_URL:str
+    SPARKAI_URL: str
     SPARKAI_APP_ID: str
-    SPARKAI_API_SECRET:str
+    SPARKAI_API_SECRET: str
     SPARKAI_API_KEY: str
     SPARKAI_DOMAIN: str
-
 
     # 数据库连接URL
     DATABASE_URL: str  # = "mysql+pymysql://root:123456@localhost/gjrcdemo"
