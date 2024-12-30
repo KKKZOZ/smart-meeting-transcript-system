@@ -36,4 +36,3 @@ def llm_extract(records):
     # 执行模型调用
     response = llm.invoke(prompt)
     return response.content
-

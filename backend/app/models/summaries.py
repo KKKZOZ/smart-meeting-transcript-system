@@ -8,14 +8,10 @@ class Summary(Base):
 
     summary_id = Column(Integer, primary_key=True)
     meeting_id = Column(
-        String(50),
-        ForeignKey("meetings.meeting_id", ondelete="CASCADE")
+        String(50), ForeignKey("meetings.meeting_id", ondelete="CASCADE")
     )
     content = Column(Text, nullable=False)
-    summary_type = Column(
-        String(21345),
-        default="简要概述"  
-    )
+    summary_type = Column(String(21345), default="简要概述")
     generated_at = Column(TIMESTAMP, nullable=False, default=datetime.now)
 
     def __str__(self):
