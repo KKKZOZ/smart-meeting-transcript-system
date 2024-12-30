@@ -27,81 +27,105 @@
         <!-- 显示文本和音频播放器 -->
         <div v-else class="transcript-section">
             <div class="text-display">
-                <div class="left-text" style="max-height: 60vh; overflow-y: auto">
-                    <h3>会议转录</h3>
-                    <el-button
-                        v-if="isTranscribed === 2"
-                        type="primary"
-                        plain
-                        @click="
-                            () => {
-                                dialogVisible = true;
-                                fetchParticipants();
-                            }
-                        "
-                    >
-                        对应参会人员
-                    </el-button>
-
-                    <!-- 对话框 -->
-                    <el-dialog v-model="dialogVisible" title="对应参会人员" width="500">
-                        <div v-for="index in count" :key="index" style="margin-bottom: 16px">
-                            <div>发言人{{ index }}：</div>
+                <div class="left-text" style="max-height: 65vh">
+                    <el-container>
+                        <el-header>
+                            <span style="font-size: 30px; font-weight: bold; padding-right: 20px"
+                                >会议转录</span
+                            >
+                            <el-button
+                                v-if="isTranscribed === 2"
+                                type="primary"
+                                plain
+                                @click="
+                                    () => {
+                                        dialogVisible = true;
+                                        fetchParticipants();
+                                    }
+                                "
+                            >
+                                对应参会人员
+                            </el-button>
+                        </el-header>
+                        <el-main style="max-height: 55vh; overflow-y: auto; margin-top: 30px">
+                            <!-- 对话框 -->
+                            <el-dialog v-model="dialogVisible" title="对应参会人员" width="500">
+                                <div
+                                    v-for="index in count"
+                                    :key="index"
+                                    style="margin-bottom: 16px"
+                                >
+                                    <div>发言人{{ index }}：</div>
+                                    <el-select
+                                        v-model="selections[index - 1]"
+                                        placeholder="请选择"
+                                        style="width: 240px"
+                                    >
+                                        <el-option
+                                            v-for="option in speakerOptions"
+                                            :key="option.value"
+                                            :label="option.label"
+                                            :value="option.value"
+                                        />
+                                    </el-select>
+                                </div>
+                                <template #footer>
+                                    <div class="dialog-footer">
+                                        <el-button @click="dialogVisible = false">取消</el-button>
+                                        <el-button type="primary" @click="changeRoles"
+                                            >确认</el-button
+                                        >
+                                    </div>
+                                </template>
+                            </el-dialog>
+                            <pre style="white-space: pre-wrap; word-wrap: break-word">{{
+                                Text || '请点击生成文字'
+                            }}</pre>
+                            <el-button
+                                v-if="isTranscribed === 0"
+                                type="primary"
+                                @click="createTasks"
+                                >生成文字</el-button
+                            >
+                        </el-main>
+                    </el-container>
+                </div>
+                <div class="right-text" style="max-height: 65vh">
+                    <el-container>
+                        <el-header>
+                            <span style="font-size: 30px; font-weight: bold; padding-right: 20px"
+                                >翻译</span
+                            ><br />
                             <el-select
-                                v-model="selections[index - 1]"
-                                placeholder="请选择"
+                                v-model="value"
+                                v-if="[1, 2].includes(isTranscribed)"
+                                placeholder="Select"
                                 style="width: 240px"
                             >
                                 <el-option
-                                    v-for="option in speakerOptions"
-                                    :key="option.value"
-                                    :label="option.label"
-                                    :value="option.value"
+                                    v-for="item in options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
                                 />
                             </el-select>
-                        </div>
-                        <template #footer>
-                            <div class="dialog-footer">
-                                <el-button @click="dialogVisible = false">取消</el-button>
-                                <el-button type="primary" @click="changeRoles">确认</el-button>
-                            </div>
-                        </template>
-                    </el-dialog>
-                    <pre style="white-space: pre-wrap; word-wrap: break-word">{{
-                        Text || '请点击生成文字'
-                    }}</pre>
-                    <el-button v-if="isTranscribed === 0" type="primary" @click="createTasks"
-                        >生成文字</el-button
-                    >
-                </div>
-                <div class="right-text" style="max-height: 60vh; overflow-y: auto">
-                    <h3>翻译</h3>
-                    <el-select
-                        v-model="value"
-                        v-if="[1, 2].includes(isTranscribed)"
-                        placeholder="Select"
-                        style="width: 240px"
-                    >
-                        <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                        />
-                    </el-select>
-                    <el-button
-                        v-if="[1, 2].includes(isTranscribed)"
-                        type="primary"
-                        class="translate-button"
-                        @click="translateTasks"
-                        >翻译</el-button
-                    >
-                    <pre
-                        style="white-space: pre-wrap; word-wrap: break-word"
-                        v-if="[1, 2].includes(isTranscribed)"
-                        >{{ translateText || '请选择要翻译成的语言' }}</pre
-                    >
-                    <p v-if="[-1, 0].includes(isTranscribed)">{{ '请先转录会议' }}</p>
+                            <el-button
+                                v-if="[1, 2].includes(isTranscribed)"
+                                type="primary"
+                                class="translate-button"
+                                @click="translateTasks"
+                                >翻译</el-button
+                            >
+                        </el-header>
+                        <el-main style="max-height: 55vh; overflow-y: auto; margin-top: 30px">
+                            <pre
+                                style="white-space: pre-wrap; word-wrap: break-word"
+                                v-if="[1, 2].includes(isTranscribed)"
+                                >{{ translateText || '请选择要翻译成的语言' }}</pre
+                            >
+                            <p v-if="[-1, 0].includes(isTranscribed)">{{ '请先转录会议' }}</p>
+                        </el-main>
+                    </el-container>
                 </div>
             </div>
 
@@ -111,15 +135,6 @@
                     <source :src="audioSrc" type="audio/mp3" />
                     Your browser does not support the audio element.
                 </audio>
-            </div>
-
-            <div class="action-buttons">
-                <el-button v-if="isTranscribed === 2" type="primary" @click="generateSummary"
-                    >Summary</el-button
-                >
-                <el-button v-if="isTranscribed === 2" type="primary" @click="generateTasks"
-                    >Tasks</el-button
-                >
             </div>
         </div>
     </div>
@@ -316,13 +331,6 @@
             console.error('Error creating task:', error);
         }
         // console.log('Translating tasks...');
-    };
-
-    const generateSummary = () => {
-        console.log('Generating summary...');
-    };
-    const generateTasks = () => {
-        console.log('Generating tasks...');
     };
 </script>
 

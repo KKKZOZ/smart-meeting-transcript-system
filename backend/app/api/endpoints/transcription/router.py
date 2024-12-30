@@ -18,7 +18,7 @@ from app.db.session import get_db
 from app.models.meeting import Meeting, MeetingParticipants
 from app.models.transcriptions import Transcription
 from app.models.user import User
-from app.schemas.notifications import NotificationCreate
+from app.schemas.notification import NotificationCreate
 from app.schemas.meeting import MeetingCreate, MeetingResponse, ParticipantResponse
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
