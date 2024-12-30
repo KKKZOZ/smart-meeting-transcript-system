@@ -1,31 +1,78 @@
 <template>
     <div>
-        <input type="text" v-model="searchQuery" placeholder="搜索历史会议..." />
+        <input class="searchArea" type="text" v-model="searchQuery" placeholder="搜索历史会议..." />
         <button class="search_button" @click="search">
             <img src="@/assets/img/magnifier.png" alt="Search" />
         </button>
     </div>
     <div>
-        <table>
+        <table class="showTable">
             <tr>
-                <th>Meeting Title</th>
-                <th>Meeting Content</th>
-                <th>Transcription Time</th>
-                <th> </th>
-                <th> </th>
+                <th
+                    style="
+                        font-size: 1.5em;
+                        text-align: center;
+                        height: 80px;
+                        background-color: #f5f5f5;
+                    "
+                    >Meeting Title</th
+                >
+                <th
+                    style="
+                        font-size: 1.5em;
+                        text-align: center;
+                        height: 80px;
+                        background-color: #f5f5f5;
+                    "
+                    >Meeting Content</th
+                >
+                <th
+                    style="
+                        font-size: 1.5em;
+                        text-align: center;
+                        height: 80px;
+                        background-color: #f5f5f5;
+                    "
+                    >Transcription Time</th
+                >
+                <th style="background-color: #f5f5f5"> </th>
+                <th style="background-color: #f5f5f5"> </th>
             </tr>
             <tr v-for="(item, index) in title" :key="index">
-                <td>{{ item }}</td>
-                <td>
-                    <textarea v-model="content[index]"> </textarea>
+                <td style="font-size: 20px; text-align: center">{{ item }}</td>
+                <td style="font-size: 20px; text-align: center">
+                    <textarea
+                        v-model="content[index]"
+                        readonly
+                        style="color: #79859c; font-size: 20px"
+                    >
+                    </textarea>
                 </td>
 
-                <td>{{ timestamp[index] }}</td>
+                <td style="font-size: 20px; text-align: center">{{ timestamp[index] }}</td>
                 <td>
-                    <button @click="create(index)">Create</button>
+                    <button
+                        style="
+                            background-color: #24adf3;
+                            font-size: 18px;
+                            color: #ffffff;
+                            border: 2px solid gray;
+                        "
+                        @click="create(index)"
+                        >Create</button
+                    >
                 </td>
                 <td>
-                    <button @click="checkHistory(index)">History Summary</button>
+                    <button
+                        style="
+                            background-color: #24adf3;
+                            font-size: 18px;
+                            color: #ffffff;
+                            border: 2px solid gray;
+                        "
+                        @click="checkHistory(index)"
+                        >History Summary</button
+                    >
                 </td>
             </tr>
         </table>
@@ -35,11 +82,11 @@
         <div class="modal-content">
             <h2>{{ meetingTitle }}会议</h2>
             <div class="form-group">
-                <label for="summaryType">请输入您要选择的摘要类型</label>
-
+                <label for="summaryType" style="font-size: 18px">(请输入摘要类型)</label>
                 <br />
 
                 <input
+                    class="summaryTypeArea"
                     type="text"
                     id="summaryType"
                     v-model="summaryType"
@@ -58,10 +105,6 @@
         <div class="modal-content">
             <h2>{{ meetingTitle }}会议</h2>
             <div class="form-group">
-                <!-- <label for="summaryType">
-                    {{ summaryContent }}
-
-                </label> -->
                 <div>
                     <textarea
                         v-model="summaryContent"
@@ -86,7 +129,7 @@
                     <tr v-for="(item, index) in historyTime" :key="index">
                         <td>{{ item }}</td>
                         <td>
-                            <textarea v-model="historyType[index]"> </textarea>
+                            <textarea readonly v-model="historyType[index]"> </textarea>
                         </td>
                         <td>
                             <button @click="checkHistoryItem(index)">查看</button>
@@ -107,10 +150,6 @@
         <div class="modal-content">
             <h2>{{ meetingTitle }}会议</h2>
             <div class="form-group">
-                <!-- <label for="summaryType">
-                    {{ summaryContent }}
-
-                </label> -->
                 <div>
                     <label @input="updateText" style="width: 300px; height: 200px">
                         {{ HistoryItem }}
@@ -126,23 +165,24 @@
 </template>
 
 <style scoped>
-    input {
+    .searchArea {
         width: calc(100% - 500px);
         position: relative;
-        left: 40px;
+        left: 200px;
         padding: 10px 20px;
         margin: 10px 0;
         box-sizing: border-box;
         border-radius: 20px;
     }
 
-    table {
+    .showTable {
         width: 100%;
         position: relative;
-        left: 40px;
+        left: 200px;
         width: calc(100% - 460px);
         border-collapse: collapse;
-        background-color: #ffffff;
+        background-color: #fcfcfc;
+        border-radius: 2px;
     }
 
     .search_button {
@@ -152,9 +192,11 @@
         border: none;
         cursor: pointer;
         position: relative;
-        left: 40px;
+        left: 200px;
         padding: 0;
         margin-left: 10px;
+        background-color: #f0f5ee;
+        border-radius: 8px;
     }
 
     button img {
@@ -203,10 +245,6 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import axios from '@/axios';
-    // import { textProps } from 'element-plus';
-    // import debounce from 'lodash/debounce';
-    // import { useRouter } from 'vue-router';
-    // const router = useRouter();
     const title = ref([]);
     const content = ref([]);
     const timestamp = ref([]);
@@ -216,7 +254,6 @@
     const historyContent = ref([]);
     const searchQuery = ref('');
     const now_index = ref('');
-    // const sum_index = ref('');
     const showModal = ref(false);
     const showModalResult = ref(false);
     const summaryType = ref('');
@@ -225,8 +262,6 @@
     const showModalhistory = ref(false);
     const showModalHistoryItem = ref(false);
     const HistoryItem = ref('');
-    // const newsummary = ref('');
-    // 从后端获取用户列表
     const fetchData = async () => {
         try {
             const response = await axios.get('/api/getMeetingData'); // 请求用户数据的 API
@@ -235,7 +270,6 @@
             content.value = response.data.content;
             timestamp.value = response.data.timestamp;
             meeting_id.value = response.data.meeting_id;
-            // alert('load user options.');
         } catch (error) {
             console.error('Failed to fetch data:', error);
             alert('Failed to load data.');
@@ -244,7 +278,6 @@
 
     const searchData = async () => {
         try {
-            // alert('searching');
             const response = await axios.get('/api/searchquery', {
                 params: { s_query: searchQuery.value },
             }); // 请求用户数据的 API
@@ -253,7 +286,6 @@
             content.value = response.data.content;
             timestamp.value = response.data.timestamp;
             meeting_id.value = response.data.meeting_id;
-            // alert('load user options.');
         } catch (error) {
             console.error('Failed to fetch users:', error);
             alert('Failed to load user options.');
@@ -267,7 +299,6 @@
     const create = index => {
         console.log(`Create button clicked for index: ${meeting_id.value[index]}`);
         // 在这里添加你的逻辑
-        // router.push({ name: 'summaryCreate', params: {meetingId,meetingTitle} });
         now_index.value = index;
         showModal.value = true;
         meetingTitle.value = title.value[index];
@@ -298,7 +329,6 @@
     const confirm = async () => {
         console.log('confirm called');
 
-        // alert(summaryContent.value+meeting_id.value[now_index.value]+summaryType.value);
         const response = await axios.get('/api/confirmSummary', {
             params: {
                 content: summaryContent.value,
@@ -313,7 +343,6 @@
     const checkHistory = async index => {
         console.log('checkHistory called');
         now_index.value = index;
-        // alert(meeting_id.value[now_index.value]);
         const response = await axios.get('/api/checkhistory', {
             params: { meeting_id: meeting_id.value[now_index.value] },
         }); // 请求用户数据的 APIdata
@@ -326,7 +355,6 @@
     };
 
     const deleteHistory = async index => {
-        // alert(historyContent.value[index]);
         const response = await axios.get('/api/deletehistory', {
             params: {
                 meeting_id: meeting_id.value[now_index.value],
@@ -341,7 +369,6 @@
 
     const checkHistoryItem = async index => {
         console.log('checkHistoryItem called');
-        // alert(historyContent.value[index]);
         showModalhistory.value = false;
         showModalHistoryItem.value = true;
         HistoryItem.value = historyContent.value[index];

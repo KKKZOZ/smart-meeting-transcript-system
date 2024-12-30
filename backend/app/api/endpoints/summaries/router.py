@@ -25,8 +25,6 @@ def get_meeting_data(db: Session = Depends(get_db)):
     获取所有用户
     """
     meetings = db.query(
-        # User.user_id.label("participant_id"),
-        # User.username.label("participant_name"),
         Transcription.meeting_id,
         Transcription.timestamp,
         Transcription.content,
