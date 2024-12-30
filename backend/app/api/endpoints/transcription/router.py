@@ -13,12 +13,12 @@ from app.services.transcription import (
     splicing,
     splicing_second,
 )
-from app.services.notification import send_notification_email
+from app.services.notification import create_notification
 from app.db.session import get_db
 from app.models.meeting import Meeting, MeetingParticipants
 from app.models.transcriptions import Transcription
 from app.models.user import User
-from app.models.notifications import Notification
+from app.schemas.notifications import NotificationCreate
 from app.schemas.meeting import MeetingCreate, MeetingResponse, ParticipantResponse
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
@@ -271,27 +271,17 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
 
         for participant in meeting_participants:
             # 创建通知实体
-            notification = Notification(
-                user_id=participant.participant_id,
+            notification = NotificationCreate(
                 task_id="",
                 content=f"会议 {meeting_id} 的转录任务已完成。请查看转录内容。",
-                ddl="",  # 假设通知有效期为7天
-                status="",
+                ddl=datetime.utcnow(),
             )
 
-            # 根据用户 ID 查询邮箱地址
-            user = (
-                thread_db.query(User)
-                .filter(User.user_id == participant.participant_id)
-                .first()
-            )
-
-            # 发送邮件
-            success = send_notification_email(notification, user.email)
+            success = create_notification(notification, participant.participant_id)
             if success:
-                print(f"Email sent successfully to {user.email}")
+                print(f"Email sent successfully to {participant.participant_id}")
             else:
-                print(f"Failed to send email to {user.email}")
+                print(f"Failed to send email to {participant.participant_id}")
 
         thread_db.close()
 
