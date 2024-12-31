@@ -1,217 +1,276 @@
 <template>
-    <div class="container">
-        <!-- 新增按钮 -->
-        <div>
-            <!-- 下拉按钮 -->
-            <button @click="toggleDropdown" class="search-btn">
+    <div class="todo-app">
+        <!-- 新增待办事项 -->
+        <div class="add-todo">
+            <span class="add-label" @mouseenter="showDropdown" @mouseleave="scheduleHideDropdown">
                 新增待办事项
-            </button>
-
-            <!-- 下拉菜单 -->
-            <div v-if="dropdownVisible" class="dropdown-menu">
-                <button @click="addTask" class="dropdown-item">从空白事项添加</button>
-                <button @click="addByExtract" class="dropdown-item">从会议记录提取</button>
+            </span>
+            <div v-if="dropdownVisible" class="dropdown" @mouseenter="keepDropdownVisible"
+                @mouseleave="scheduleHideDropdown">
+                <button @click="addFromBlank">从空白事项添加</button>
+                <button @click="addFromMeeting">从会议记录提取</button>
             </div>
         </div>
 
-        <!-- 两个切换按钮 -->
-        <div class="button-group">
-            <button @click="review" class="switch-btn">要检查的</button>
-            <button @click="excution" class="switch-btn">要执行的</button>
+        <!-- 选择标签 -->
+        <div class="tabs">
+            <button :class="{ 'active': selectedTab === 'check' }" @click="selectTab('check')">要检查的</button>
+            <button :class="{ 'active': selectedTab === 'execute' }" @click="selectTab('execute')">要执行的</button>
         </div>
 
-        <!-- 表格 -->
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>编号</th>
-                    <th>姓名</th>
-                    <th>年龄</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(row, index) in tableData" :key="index">
-                    <td>{{ row.id }}</td>
-                    <td>{{ row.name }}</td>
-                    <td>{{ row.age }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- 待办事项表格 -->
+        <div class="todo-list">
+            <table v-if="selectedTab === 'check'">
+                <thead>
+                    <tr>
+                        <th>任务名称</th>
+                        <th>截止时间</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(todo, index) in checkTodos" :key="index">
+                        <td>{{ todo.name }}</td>
+                        <td>{{ todo.dueDate }}</td>
+                        <td>{{ todo.status }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table v-if="selectedTab === 'execute'">
+                <thead>
+                    <tr>
+                        <th>任务名称</th>
+                        <th>执行人</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(todo, index) in executeTodos" :key="index">
+                        <td>{{ todo.name }}</td>
+                        <td>{{ todo.executor }}</td>
+                        <td>{{ todo.status }}</td>
+                        <td>
+                            <!-- 根据状态显示提交按钮或完成图标 -->
+                            <button v-if="todo.status === '待处理'" @click="submitTask(todo)" class="submit-btn">
+                                提交
+                            </button>
+                            <span v-else-if="todo.status === '已完成'" class="completed-icon">✔</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
 <script setup>
     import { ref, onMounted } from 'vue';
-    import axios from '@/axios';
     import router from '../router';
 
-    // 表格数据
-    var tableData = ref([]);
-
-    // 用于保存搜索数据
-    var searchData = ref(null);
-
-    // 下拉菜单控制
-    var dropdownVisible = ref(false);
-
-    const toggleDropdown = () => {
-        dropdownVisible.value = !dropdownVisible.value; // 切换下拉菜单显示
-    };
-
-    // 搜索按钮点击后获取数据
-    const addTask = async () => {
-        try {
-            // 发起 GET 请求，从后端获取数据（假设后端接口为 /api/data）
-            const response = await axios.post('/api/llm_extraction'); // 示例接口
-            searchData.value = response.data; // 保存搜索结果，但不填充表格
-            alert(response.data)
-        } catch (error) {
-            console.error('获取数据失败', error);
-            alert('数据获取失败');
+    const dropdownVisible = ref(false); // 控制下拉框显示
+    const selectedTab = ref('check'); // 当前选中的标签
+    const checkTodos = ref([]); // 从服务器获取的待检查任务列表
+    const executeTodos = ref([]); // 从服务器获取的待执行任务列表
+    const dropdownTimeout = ref(null) // 定时器用于控制下拉按钮消失延时
+    const showDropdown = () => {
+        dropdownVisible.value = true;
+        if (dropdownTimeout.value) {
+            clearTimeout(dropdownTimeout.value); // 如果有定时器，清除它
         }
     };
-
-    const addByExtract = () => {
+    const scheduleHideDropdown = () => {
+        dropdownTimeout.value = setTimeout(() => {
+            dropdownVisible.value = false;
+        }, 50); // 延时 50ms 后隐藏
+    };
+    const keepDropdownVisible = () => {
+        // 保持下拉按钮可见，鼠标悬停时不消失
+        if (dropdownTimeout.value) {
+            clearTimeout(dropdownTimeout.value);
+        }
+    };
+    const addFromBlank = () => {
+        // 跳转到空白事项添加页面
+        router.push("/new-tasks");
+    };
+    const addFromMeeting = () => {
+        // 跳转到会议记录提取页面
         router.push("/extract-tasks-from-meetings");
     };
-
-    // 独立的函数用来填充表格内容 A
-    const review = () => {
-        const mockDataA = [
-            { id: 1, name: '张三', age: 28 },
-            { id: 2, name: '李四', age: 35 },
-            { id: 3, name: '王五', age: 22 },
-        ];
-        fillTableData(mockDataA);
+    const selectTab = (tab) => {
+        selectedTab.value = tab;
     };
-
-    // 独立的函数用来填充表格内容 B
-    const excution = () => {
-        const mockDataB = [
-            { id: 4, name: '赵六', age: 42 },
-            { id: 5, name: '孙七', age: 26 },
-            { id: 6, name: '周八', age: 30 },
-        ];
-        fillTableData(mockDataB);
+    const submitTask = (todo) => {
+        // 提交任务处理逻辑
+        todo.status = '已完成'; // 模拟任务提交后状态变更为已完成
+        alert(`任务"${todo.name}"已提交！`);
     };
-
-    // 填充表格内容的通用方法
-    const fillTableData = data => {
-        tableData.value = data;
-    };
-
     onMounted(() => {
-        // 页面加载时可以自动调用搜索获取数据
-        review();
+        // 模拟从服务器获取数据
+        checkTodos.value = [
+            { name: '检查日报', dueDate: '2024-01-01', status: '待处理' },
+            { name: '审核项目进度', dueDate: '2024-01-02', status: '已完成' },
+        ];
+        executeTodos.value = [
+            { name: '完成任务A', executor: '张三', status: '待处理' },
+            { name: '处理任务B', executor: '李四', status: '已完成' },
+        ];
     });
 </script>
 
 <style scoped>
-    /* 页面容器 */
-    .container {
-        width: 80%;
-        margin: 0 auto;
-        padding: 20px;
+    .todo-app {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 30px;
+        min-height: 100vh;
     }
 
-    /* 搜索按钮样式 */
-    .search-btn {
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: #4caf50;
+    /* 新增待办事项样式 */
+    .add-todo {
+        position: relative;
+        background-color: #007bff;
+        padding: 15px 20px;
         color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+        border-radius: 8px;
+        display: inline-block;
         margin-bottom: 20px;
-        transition: background-color 0.3s;
-    }
-
-    .search-btn:hover {
-        background-color: #45a049;
-    }
-
-    /* 切换按钮样式 */
-    .button-group {
-        margin: 20px 0;
-    }
-
-    .switch-btn {
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: #2196f3;
-        color: white;
-        border: none;
-        border-radius: 5px;
+        font-size: 18px;
+        font-weight: bold;
         cursor: pointer;
-        margin-right: 10px;
     }
 
-    .switch-btn:hover {
-        background-color: #1976d2;
+    .add-label {
+        display: inline-block;
+    }
+
+    .add-todo:hover {
+        background-color: #0056b3;
+    }
+
+    .dropdown {
+        position: absolute;
+        top: 50px;
+        left: 0;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 200px;
+        transition: opacity 0.3s ease;
+        padding: 0; /* 保证按钮不会超出边界 */
+    }
+
+    .dropdown button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background: none;
+        text-align: left;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        border-radius: 8px; /* 保证按钮与父容器圆角一致 */
+        box-sizing: border-box; /* 确保内边距不会改变元素的大小 */
+        box-sizing: border-box; /* 确保背景色不会超出边框 */
+    }
+
+    .dropdown button:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* 标签栏 */
+    .tabs {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+    .tabs button {
+        padding: 12px 25px;
+        margin-right: 12px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+    }
+
+    /* 选中的按钮 */
+    .tabs button.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    /* 悬停时加深背景色 */
+    .tabs button:hover {
+        background-color: #f0f4f8;
+    }
+
+    /* 悬停时选中按钮加深 */
+    .tabs button.active:hover {
+        background-color: #0056b3;
     }
 
     /* 表格样式 */
-    .data-table {
+    .todo-list table {
         width: 100%;
         border-collapse: collapse;
-        background-color: #ffffff;
-        /* 设置不透明的白色背景 */
         margin-top: 20px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .data-table th,
-    .data-table td {
-        padding: 10px;
+    .todo-list th,
+    .todo-list td {
+        padding: 14px;
         border: 1px solid #ddd;
-        text-align: center;
-    }
-
-    .data-table th {
-        background-color: #f4f4f4;
-    }
-
-    .data-table tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    .data-table tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    /* 加载中的文本 */
-    p {
+        text-align: left;
         font-size: 16px;
+    }
+
+    .todo-list th {
+        background-color: #f7f9fc;
         color: #555;
     }
 
-
-    .search-btn:hover {
-        background-color: #45a049;
-        /* 鼠标悬停时的背景色 */
+    .todo-list td {
+        background-color: #ffffff;
+        color: #333;
     }
 
-    .dropdown-menu {
-        display: block;
-        position: absolute;
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        margin-top: 5px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    .todo-list td:nth-child(odd) {
+        background-color: #f9f9f9;
     }
 
-    .dropdown-item {
-        padding: 10px 20px;
-        background-color: white;
-        border: none;
-        width: 100%;
-        text-align: left;
-        cursor: pointer;
-    }
-
-    .dropdown-item:hover {
+    .todo-list tr:hover {
         background-color: #f1f1f1;
-        /* 鼠标悬停时的背景色 */
+    }
+
+    /* 提交按钮样式 */
+    .submit-btn {
+        padding: 6px 12px;
+        font-size: 14px;
+        color: white;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* 完成图标 */
+    .completed-icon {
+        color: #28a745;
+        font-size: 18px;
+        font-weight: bold;
     }
 </style>
