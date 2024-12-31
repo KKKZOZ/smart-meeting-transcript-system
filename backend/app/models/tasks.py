@@ -10,7 +10,8 @@ class Task(Base):
         String(50), ForeignKey("meetings.meeting_id", ondelete="CASCADE")
     )
     description = Column(Text, nullable=False)
-    assignee_id = Column(String(50), ForeignKey("users.user_id", ondelete="CASCADE"))
+    inspector_id = Column(String(50), ForeignKey("users.user_id", ondelete="CASCADE"))
+    executor_id = Column(String(50), ForeignKey("users.user_id", ondelete="CASCADE"))
     due_date = Column(Date, nullable=True)
     status = Column(String(20), nullable=False)
 
@@ -19,7 +20,8 @@ class Task(Base):
             f"Task(task_id={self.task_id}, "
             f"meeting_id={self.meeting_id}, "
             f"description='{self.description}', "
-            f"assignee_id={self.assignee_id}, "
+            f"inspector_id={self.inspector_id}, "
+            f"executor_id={self.executor_id}, "
             f"due_date={self.due_date}, "
             f"status={self.status})"
         )
