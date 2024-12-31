@@ -13,10 +13,12 @@ from app.services.transcription import (
     splicing,
     splicing_second,
 )
+from app.services.notification import create_notification
 from app.db.session import get_db
 from app.models.meeting import Meeting, MeetingParticipants
 from app.models.transcriptions import Transcription
 from app.models.user import User
+from app.schemas.notification import NotificationCreate
 from app.schemas.meeting import MeetingCreate, MeetingResponse, ParticipantResponse
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
@@ -91,7 +93,7 @@ def get_participants(meeting_id: str, db: Session = Depends(get_db)):
     participants = (
         db.query(
             User.user_id.label("participant_id"),
-            User.username.label("participant_name"),
+            User.nickname.label("participant_name"),
         )
         .join(MeetingParticipants, MeetingParticipants.participant_id == User.user_id)
         .filter(MeetingParticipants.meeting_id == meeting_id)
@@ -259,6 +261,28 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
             transcription.task_status = "COMPLETED"
             transcription.speaker_count = speaker_count
             thread_db.commit()
+
+        # 给每一个参与者发送邮件
+        meeting_participants = (
+            thread_db.query(MeetingParticipants)
+            .filter(MeetingParticipants.meeting_id == meeting_id)
+            .all()
+        )
+
+        for participant in meeting_participants:
+            # 创建通知实体
+            notification = NotificationCreate(
+                task_id="",
+                content=f"会议 {meeting_id} 的转录任务已完成。请查看转录内容。",
+                ddl=datetime.utcnow(),
+            )
+
+            success = create_notification(notification, participant.participant_id)
+            if success:
+                print(f"Email sent successfully to {participant.participant_id}")
+            else:
+                print(f"Failed to send email to {participant.participant_id}")
+
         thread_db.close()
 
     # 启动新线程执行任务

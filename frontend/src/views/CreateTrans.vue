@@ -1,47 +1,47 @@
 <template>
     <div class="create-meeting">
-        <h2>Create a Meeting</h2>
+        <h2>创建新会议</h2>
 
         <!-- 表单部分 -->
         <form @submit.prevent="submitMeeting">
             <!-- 会议名称 -->
             <div class="form-group">
-                <label for="meeting-name">Meeting Name:</label>
+                <label for="meeting-name">会议名称:</label>
                 <input
                     id="meeting-name"
                     v-model="meeting.name"
                     type="text"
-                    placeholder="Enter meeting name"
+                    placeholder="请在框内输入会议名称"
                     required
                 />
             </div>
 
             <!-- 起止时间 -->
             <div class="form-group">
-                <label for="start-time">Start Time:</label>
+                <label for="start-time">会议开始时间:</label>
                 <input id="start-time" v-model="meeting.startTime" type="datetime-local" required />
 
-                <label for="end-time">End Time:</label>
+                <label for="end-time">会议结束时间:</label>
                 <input id="end-time" v-model="meeting.endTime" type="datetime-local" required />
             </div>
 
             <!-- 会议语言 -->
             <div class="form-group">
-                <label for="language">Language:</label>
+                <label for="language">请选择会议主语言:</label>
                 <select id="language" v-model="meeting.language" required>
-                    <option value="zh">Chinese</option>
-                    <option value="en">English</option>
+                    <option value="zh">汉语</option>
+                    <option value="en">英语</option>
                 </select>
             </div>
 
-            <div class="m-4">
+            <div class="form-group">
                 <p>参会人员</p>
                 <el-select
                     v-model="value1"
                     multiple
                     collapse-tags
                     collapse-tags-tooltip
-                    placeholder="Select"
+                    placeholder="选择"
                     style="width: 240px"
                 >
                     <el-option
@@ -54,7 +54,7 @@
             </div>
 
             <!-- 提交按钮 -->
-            <button type="submit">Create Meeting</button>
+            <button type="submit">创建会议</button>
         </form>
     </div>
 </template>
