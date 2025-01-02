@@ -260,10 +260,10 @@
             tasks: tasksToStore
         });
 
-        if(response.data.message === "success"){
+        if (response.data.message === "success") {
             alert('待办事项创建成功！');
             router.push("/tasks");
-        }else{
+        } else {
             alert('待办事项创建失败');
         }
     };
