@@ -1,6 +1,10 @@
 import { createStore } from 'vuex';
+import notifications from './modules/notifications';
 
 export default createStore({
+    modules: {
+        notifications,
+    },
     state: {
         hideConfigButton: false,
         isPinned: false,

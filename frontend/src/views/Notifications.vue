@@ -85,12 +85,12 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
+    import { useStore } from 'vuex';
     import axios from '@/axios';
 
     const router = useRouter();
+    const store = useStore();
     const notifications = ref([]);
-    const showDetail = ref(false);
-    const selectedNotification = ref(null);
 
     const getNotificationType = notification => {
         if (notification.meeting_id) {
@@ -126,8 +126,14 @@
     // 删除通知
     const deleteNotification = async id => {
         try {
+            const notification = notifications.value.find(n => n.notification_id === id);
             await axios.delete(`http://localhost:8000/api/notifications/${id}`);
             notifications.value = notifications.value.filter(n => n.notification_id !== id);
+
+            // 如果删除的是未读通知，更新计数
+            if (notification.status === 'UNREAD') {
+                store.commit('DECREMENT_UNREAD_COUNT');
+            }
         } catch (error) {
             console.error('删除通知失败:', error);
         }
@@ -136,24 +142,27 @@
     // 切换通知状态
     const toggleStatus = async notification => {
         try {
-            const newStatus = notification.status === 'UNREAD' ? 'READ' : 'UNREAD';
+            const oldStatus = notification.status;
+            const newStatus = oldStatus === 'UNREAD' ? 'READ' : 'UNREAD';
+
             const response = await axios.put(
                 `http://localhost:8000/api/notifications/${notification.notification_id}`,
                 { status: newStatus },
             );
+
             const index = notifications.value.findIndex(
                 n => n.notification_id === notification.notification_id,
             );
             notifications.value[index] = response.data;
+
+            // 更新未读计数
+            store.dispatch('updateUnreadCount', {
+                oldStatus,
+                newStatus,
+            });
         } catch (error) {
             console.error('更新通知状态失败:', error);
         }
-    };
-
-    // 显示通知详情
-    const showNotificationDetail = notification => {
-        selectedNotification.value = notification;
-        showDetail.value = true;
     };
 
     // 处理详情按钮点击
