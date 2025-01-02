@@ -12,8 +12,19 @@ module.exports = async ({ github, context, core }) => {
   }
 
   try {
+    // 添加调试日志
+    console.log("Event type:", context.eventName);
+    console.log("Payload:", JSON.stringify(context.payload, null, 2));
+
     // 获取当前提交者
-    const pusher = context.payload.pusher.name;
+    let pusher;
+    if (context.payload.pull_request) {
+      // 如果是 PR 事件
+      pusher = context.payload.pull_request.user.login;
+    } else {
+      // 如果是 push 事件
+      pusher = context.payload.pusher.name;
+    }
     console.log("Current pusher:", pusher);
 
     // 首先读取并解析 CODEOWNERS
@@ -89,11 +100,17 @@ module.exports = async ({ github, context, core }) => {
     }
 
     const { owner, repo } = context.repo;
-    const commitUrl = context.payload.head_commit.url;
-    const commitMessage = context.payload.head_commit.message;
+    let commitUrl, commitMessage, shortCommitHash;
 
-    // 获取短 commit hash 用于标题
-    const shortCommitHash = context.payload.head_commit.id.substring(0, 7);
+    if (context.payload.pull_request) {
+      commitUrl = context.payload.pull_request.html_url;
+      commitMessage = `Merge pull request #${context.payload.pull_request.number}`;
+      shortCommitHash = context.payload.pull_request.head.sha.substring(0, 7);
+    } else {
+      commitUrl = context.payload.head_commit.url;
+      commitMessage = context.payload.head_commit.message;
+      shortCommitHash = context.payload.head_commit.id.substring(0, 7);
+    }
 
     const issueBody =
       `### New changes detected\n\n` +
