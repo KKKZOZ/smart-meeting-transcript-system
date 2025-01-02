@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey, Text, Date
+from sqlalchemy import Column, String, ForeignKey, Text, TIMESTAMP
 from app.db.base import Base
 
 
@@ -12,7 +12,7 @@ class Task(Base):
     description = Column(Text, nullable=False)
     inspector_id = Column(String(50), ForeignKey("users.user_id", ondelete="CASCADE"))
     executor_id = Column(String(50), ForeignKey("users.user_id", ondelete="CASCADE"))
-    due_date = Column(Date, nullable=True)
+    due_date = Column(TIMESTAMP, nullable=True)
     status = Column(String(20), nullable=False)
 
     def __str__(self):
