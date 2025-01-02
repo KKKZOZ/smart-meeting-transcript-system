@@ -1,5 +1,5 @@
 <script setup>
-    import { computed } from 'vue';
+    import { computed, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import { useStore } from 'vuex';
 
@@ -13,6 +13,12 @@
         const routeArr = route.path.split('/');
         return routeArr[1];
     };
+
+    const unreadCount = computed(() => store.state.notifications.unreadCount);
+
+    onMounted(() => {
+        store.dispatch('fetchUnreadCount');
+    });
 </script>
 <template>
     <div class="collapse navbar-collapse w-auto h-auto h-100" id="sidenav-collapse-main">
@@ -25,30 +31,6 @@
                 >
                     <template v-slot:icon>
                         <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
-                    </template>
-                </sidenav-item>
-            </li>
-
-            <!-- <li class="nav-item">
-                <sidenav-item
-                    to="/tables"
-                    :class="getRoute() === 'tables' ? 'active' : ''"
-                    :navText="isRTL ? 'الجداول' : 'Tables'"
-                >
-                    <template v-slot:icon>
-                        <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
-                    </template>
-                </sidenav-item>
-            </li> -->
-
-            <li class="nav-item">
-                <sidenav-item
-                    to="/notifications"
-                    :class="getRoute() === 'notifications' ? 'active' : ''"
-                    :navText="isRTL ? 'صفحة جديدة' : 'Notifications'"
-                >
-                    <template v-slot:icon>
-                        <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
                     </template>
                 </sidenav-item>
             </li>
@@ -89,37 +71,25 @@
                 </sidenav-item>
             </li>
 
-            <!-- <li class="nav-item">
+            <li class="nav-item">
                 <sidenav-item
-                    to="/billing"
-                    :class="getRoute() === 'billing' ? 'active' : ''"
-                    :navText="isRTL ? 'الفواتیر' : 'Billing'"
+                    to="/notifications"
+                    :class="getRoute() === 'notifications' ? 'active' : ''"
+                    :navText="isRTL ? 'صفحة جديدة' : 'Notifications'"
                 >
                     <template v-slot:icon>
-                        <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
+                        <div class="position-relative">
+                            <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
+                            <span
+                                v-if="unreadCount > 0"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            >
+                                {{ unreadCount > 99 ? '99+' : unreadCount }}
+                            </span>
+                        </div>
                     </template>
                 </sidenav-item>
-            </li> -->
-
-            <!-- <li class="nav-item">
-                <sidenav-item
-                    to="/virtual-reality"
-                    :class="getRoute() === 'virtual-reality' ? 'active' : ''"
-                    :navText="isRTL ? 'الواقع الافتراضي' : 'Virtual Reality'"
-                >
-                    <template v-slot:icon>
-                        <i class="ni ni-app text-info text-sm opacity-10"></i>
-                    </template>
-                </sidenav-item>
-            </li> -->
-
-            <!-- <li class="nav-item">
-        <sidenav-item to="/rtl-page" :class="getRoute() === 'rtl-page' ? 'active' : ''" navText="RTL">
-          <template v-slot:icon>
-            <i class="ni ni-world-2 text-danger text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li> -->
+            </li>
 
             <li class="mt-3 nav-item">
                 <h6
@@ -176,25 +146,12 @@
             </li>
         </ul>
     </div>
-
-    <!-- <div class="pt-3 mx-3 mt-3 sidenav-footer">
-        <sidenav-card
-            :card="{
-                title: 'Need Help?',
-                description: 'Please check our docs',
-                links: [
-                    {
-                        label: 'Documentation',
-                        route: 'https://www.creative-tim.com/learning-lab/vue/overview/argon-dashboard/',
-                        color: 'dark',
-                    },
-                    {
-                        label: 'Buy now',
-                        route: 'https://www.creative-tim.com/product/vue-argon-dashboard-pro?ref=vadp',
-                        color: 'success',
-                    },
-                ],
-            }"
-        />
-    </div> -->
 </template>
+
+<style scoped>
+    .badge {
+        font-size: 0.65rem;
+        padding: 0.25em 0.4em;
+        transform: translate(-50%, -50%);
+    }
+</style>

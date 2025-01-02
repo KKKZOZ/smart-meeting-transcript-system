@@ -44,25 +44,54 @@ Coded by www.creative-tim.com
     });
 </script>
 <template>
-    <div
-        v-show="layout === 'landing'"
-        class="landing-bg h-100 bg-gradient-primary position-fixed w-100"
-    ></div>
+    <div class="wrapper">
+        <div
+            v-show="layout === 'landing'"
+            class="landing-bg h-100 bg-gradient-primary position-fixed w-100"
+        ></div>
 
-    <sidenav v-if="showSidenav" />
+        <sidenav v-if="showSidenav" />
 
-    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        <!-- nav -->
+        <main class="main-content position-relative border-radius-lg">
+            <!-- nav -->
+            <navbar :class="[navClasses]" v-if="showNavbar" />
 
-        <navbar :class="[navClasses]" v-if="showNavbar" />
+            <div class="content-wrapper">
+                <router-view />
+            </div>
 
-        <router-view />
+            <app-footer v-show="showFooter" />
 
-        <app-footer v-show="showFooter" />
-
-        <configurator
-            :toggle="toggleConfigurator"
-            :class="[showConfig ? 'show' : '', hideConfigButton ? 'd-none' : '']"
-        />
-    </main>
+            <configurator
+                :toggle="toggleConfigurator"
+                :class="[showConfig ? 'show' : '', hideConfigButton ? 'd-none' : '']"
+            />
+        </main>
+    </div>
 </template>
+
+<style>
+    .wrapper {
+        min-height: 100vh;
+        display: flex;
+    }
+
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .content-wrapper {
+        flex: 1;
+        padding-bottom: 2rem; /* 为 footer 留出空间 */
+    }
+
+    /* 如果 app-footer 组件内还没有设置样式，需要在 app-footer 组件中添加： */
+    .footer {
+        margin-top: auto;
+        width: 100%;
+        padding: 1rem 0;
+    }
+</style>

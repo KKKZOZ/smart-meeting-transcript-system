@@ -1,14 +1,14 @@
 -- 插入一个会议，由test用户创造
 INSERT INTO meetings (meeting_id, title, start_time, end_time, language, creator_id, video_url)
-VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', 'test_meeting', '2024-12-14 12:00:00', '2024-12-14 14:00:00', 'zh', 'JVy6aUWEnZBqCiU','https://software-project510.oss-cn-beijing.aliyuncs.com/Audio/2024-12-18-video.mp3');
+VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', 'test_meeting', '2024-12-14 12:00:00', '2024-12-14 14:00:00', 'zh', '1','https://software-project510.oss-cn-beijing.aliyuncs.com/Audio/2024-12-18-video.mp3');
 
 -- 会议由test，admin，user1参与
 INSERT INTO meeting_participants (meeting_id, participant_id)
-VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', 'JVy6aUWEnZBqCiU');
+VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', '1');
 INSERT INTO meeting_participants (meeting_id, participant_id)
-VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', 'WZIuMvWHhZCIiJA');
+VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', '2');
 INSERT INTO meeting_participants (meeting_id, participant_id)
-VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', 'BL9PkGGttj4pS7J');
+VALUES ('f885f4e5-b450-477d-8efa-436ac4b41c0c', '3');
 
 -- 会议转录内容
 INSERT INTO transcriptions (meeting_id, task_id, task_status, content, timestamp, language, speaker_count, ischanged)
