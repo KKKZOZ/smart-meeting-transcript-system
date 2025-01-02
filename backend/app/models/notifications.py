@@ -16,6 +16,7 @@ class Notification(Base):
         String(50), primary_key=True, default=lambda: str(uuid.uuid4())
     )
     user_id = Column(String(50))
+    meeting_id = Column(String(50))
     task_id = Column(String(50))
     content = Column(Text, nullable=False)
     ddl = Column(TIMESTAMP, nullable=False)

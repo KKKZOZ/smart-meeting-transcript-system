@@ -16,11 +16,11 @@ def generate_sql_commands(users_data: list) -> str:
     """生成SQL插入命令"""
     sql_commands = ["-- 清空并重新创建用户表", "TRUNCATE TABLE users;\n"]
 
-    for user in users_data:
+    for index, user in enumerate(users_data):
         hashed_password = generate_password_hash(user["password"])
         sql = f"""-- 插入用户 (密码: {user["password"]})
 INSERT INTO users (user_id,username, hashed_password, email,nickname,notification_type,enabled) VALUES 
-('{generate_user_id()}','{user["username"]}', '{hashed_password}', '{user["email"]}', '{user["nickname"]}',1,1);
+('{index+1}','{user["username"]}', '{hashed_password}', '{user["email"]}', '{user["nickname"]}',1,1);
 """
         sql_commands.append(sql)
 
@@ -60,9 +60,9 @@ def main():
             "nickname": "赵助理",
         },
         {
-            "username": "user3",
-            "password": "test123",
-            "email": "user3@example.com",
+            "username": "liujinyi",
+            "password": "liujinyi",
+            "email": "kkkzoz@qq.com",
             "nickname": "刘分析师",
         },
     ]

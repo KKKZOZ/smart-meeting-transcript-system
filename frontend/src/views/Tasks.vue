@@ -5,8 +5,12 @@
             <span class="add-label" @mouseenter="showDropdown" @mouseleave="scheduleHideDropdown">
                 新增待办事项
             </span>
-            <div v-if="dropdownVisible" class="dropdown" @mouseenter="keepDropdownVisible"
-                @mouseleave="scheduleHideDropdown">
+            <div
+                v-if="dropdownVisible"
+                class="dropdown"
+                @mouseenter="keepDropdownVisible"
+                @mouseleave="scheduleHideDropdown"
+            >
                 <button @click="addFromBlank">从空白事项添加</button>
                 <button @click="addFromMeeting">从会议记录提取</button>
             </div>
@@ -14,8 +18,12 @@
 
         <!-- 选择标签 -->
         <div class="tabs">
-            <button :class="{ 'active': selectedTab === 'check' }" @click="selectTab('check')">要检查的</button>
-            <button :class="{ 'active': selectedTab === 'execute' }" @click="selectTab('execute')">要执行的</button>
+            <button :class="{ active: selectedTab === 'check' }" @click="selectTab('check')"
+                >要检查的</button
+            >
+            <button :class="{ active: selectedTab === 'execute' }" @click="selectTab('execute')"
+                >要执行的</button
+            >
         </div>
 
         <!-- 待办事项表格 -->
@@ -53,10 +61,16 @@
                         <td>{{ todo.status }}</td>
                         <td>
                             <!-- 根据状态显示提交按钮或完成图标 -->
-                            <button v-if="todo.status === '待处理'" @click="submitTask(todo)" class="submit-btn">
+                            <button
+                                v-if="todo.status === '待处理'"
+                                @click="submitTask(todo)"
+                                class="submit-btn"
+                            >
                                 提交
                             </button>
-                            <span v-else-if="todo.status === '已完成'" class="completed-icon">✔</span>
+                            <span v-else-if="todo.status === '已完成'" class="completed-icon"
+                                >✔</span
+                            >
                         </td>
                     </tr>
                 </tbody>
@@ -73,7 +87,7 @@
     const selectedTab = ref('check'); // 当前选中的标签
     const checkTodos = ref([]); // 从服务器获取的待检查任务列表
     const executeTodos = ref([]); // 从服务器获取的待执行任务列表
-    const dropdownTimeout = ref(null) // 定时器用于控制下拉按钮消失延时
+    const dropdownTimeout = ref(null); // 定时器用于控制下拉按钮消失延时
     const showDropdown = () => {
         dropdownVisible.value = true;
         if (dropdownTimeout.value) {
@@ -93,16 +107,16 @@
     };
     const addFromBlank = () => {
         // 跳转到空白事项添加页面
-        router.push("/new-tasks");
+        router.push('/new-tasks');
     };
     const addFromMeeting = () => {
         // 跳转到会议记录提取页面
-        router.push("/extract-tasks-from-meetings");
+        router.push('/extract-tasks-from-meetings');
     };
-    const selectTab = (tab) => {
+    const selectTab = tab => {
         selectedTab.value = tab;
     };
-    const submitTask = (todo) => {
+    const submitTask = todo => {
         // 提交任务处理逻辑
         todo.status = '已完成'; // 模拟任务提交后状态变更为已完成
         alert(`任务"${todo.name}"已提交！`);

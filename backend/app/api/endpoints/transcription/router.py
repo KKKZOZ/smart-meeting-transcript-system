@@ -272,12 +272,13 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
         for participant in meeting_participants:
             # 创建通知实体
             notification = NotificationCreate(
-                task_id="",
+                # task_id="",
+                meeting_id=meeting_id,
                 content=f"会议 {meeting_id} 的转录任务已完成。请查看转录内容。",
                 ddl=datetime.utcnow(),
             )
 
-            success = create_notification(notification, participant.participant_id)
+            success = create_notification(db, notification, participant.participant_id)
             if success:
                 print(f"Email sent successfully to {participant.participant_id}")
             else:
