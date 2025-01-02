@@ -1,7 +1,7 @@
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from fastapi import APIRouter, Depends, UploadFile, File, Form
+from fastapi import APIRouter, Depends
 from uuid import uuid4
 from datetime import datetime
 from app.core.security import get_current_user
@@ -58,9 +58,7 @@ async def meetings_to_extract(
 
 
 @router.post("/get-user-info", response_model=List[UserInfo])
-async def meetings_to_extract(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
-):
+async def get_user_info(db: Session = Depends(get_db)):
     """
     获取用户信息
     """
@@ -113,7 +111,7 @@ async def create_tasks(tasks_info: TasksToCreate, db: Session = Depends(get_db))
             db.add(new_task)
         db.commit()
         return {"message": "success"}
-    except:
+    except Exception:
         return {"message": "fail"}
 
 
