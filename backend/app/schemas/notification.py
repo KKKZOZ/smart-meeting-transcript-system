@@ -5,7 +5,8 @@ from app.models.notifications import NotificationStatus
 
 
 class NotificationCreate(BaseModel):
-    task_id: str
+    task_id: Optional[str] = None
+    meeting_id: Optional[str] = None
     content: str
     ddl: datetime
 
@@ -19,7 +20,8 @@ class NotificationUpdate(BaseModel):
 class NotificationResponse(BaseModel):
     notification_id: str
     user_id: str
-    task_id: str
+    task_id: Optional[str]
+    meeting_id: Optional[str]
     content: str
     ddl: datetime
     status: NotificationStatus

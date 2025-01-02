@@ -8,7 +8,9 @@
                 <label>选择检查人:</label>
                 <select v-model="selectedReviewer">
                     <option value="" disabled>请选择检查人</option>
-                    <option v-for="(user, idx) in users" :key="idx" :value="user">{{ user }}</option>
+                    <option v-for="(user, idx) in users" :key="idx" :value="user">{{
+                        user
+                    }}</option>
                 </select>
             </div>
             <button class="add-btn" @click="addTodoItem">增加待办事项</button>
@@ -28,7 +30,9 @@
                     <label>执行人:</label>
                     <select v-model="todo.executor">
                         <option value="" disabled>请选择执行人</option>
-                        <option v-for="(user, idx) in users" :key="idx" :value="user">{{ user }}</option>
+                        <option v-for="(user, idx) in users" :key="idx" :value="user">{{
+                            user
+                        }}</option>
                     </select>
                 </div>
 
@@ -64,11 +68,11 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import router from '../router';
-    const todoList = ref([]) // 存储待办事项列表
+    const todoList = ref([]); // 存储待办事项列表
     const users = ref(['张三', '李四', '王五', '赵六']); // 执行人和检查人的候选列表
     const selectedReviewer = ref(''); // 当前选中的检查人
-    const hours = ref(Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))) // 小时列表
-    const minutes = ref(Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))) // 分钟列表
+    const hours = ref(Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))); // 小时列表
+    const minutes = ref(Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))); // 分钟列表
     onMounted(() => {
         // 模拟从 URL 或其他地方传入的参数，进行初始化
         const initialTodos = getInitialTodos(); // 获取待办事项的初始数据
@@ -104,14 +108,20 @@
         });
     };
     // 删除待办事项
-    const deleteTodoItem = (index) => {
+    const deleteTodoItem = index => {
         todoList.value.splice(index, 1);
     };
     // 提交待办事项
     const submitTodoList = () => {
         // 检查待办事项是否填写完整
         for (let todo of todoList.value) {
-            if (!todo.content || !todo.executor || !todo.dueDate || !todo.dueTime.hours || !todo.dueTime.minutes) {
+            if (
+                !todo.content ||
+                !todo.executor ||
+                !todo.dueDate ||
+                !todo.dueTime.hours ||
+                !todo.dueTime.minutes
+            ) {
                 alert('请填写所有待办事项的内容、执行人和截止时间！');
                 return;
             }
@@ -125,7 +135,7 @@
 
         console.log('提交的待办事项：', todoList.value, '检查人：', selectedReviewer.value);
         alert('待办事项提交成功！');
-        router.push("/tasks");
+        router.push('/tasks');
     };
 </script>
 
@@ -166,8 +176,8 @@
     }
 
     select,
-    input[type="text"],
-    input[type="date"] {
+    input[type='text'],
+    input[type='date'] {
         width: 100%;
         padding: 10px;
         border: 1px solid #ccc;
@@ -175,9 +185,9 @@
         font-size: 14px;
     }
 
-    input[type="text"]:focus,
+    input[type='text']:focus,
     select:focus,
-    input[type="date"]:focus {
+    input[type='date']:focus {
         border-color: #4caf50;
         outline: none;
     }

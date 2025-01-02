@@ -1,10 +1,13 @@
 -- 1. user: admin, task_id: 1, status: unread
 INSERT INTO notifications (notification_id, user_id, task_id, content, ddl, status)
-VALUES (UUID(), 'WZIuMvWHhZCIiJA', '1', '用户1的任务1的通知', CURRENT_TIMESTAMP, 'unread');
+VALUES (UUID(), '1', '1', '用户1的任务1的通知', CURRENT_TIMESTAMP, 'unread');
+
+INSERT INTO notifications (notification_id, user_id, meeting_id, content, ddl, status)
+VALUES (UUID(), '1', 'f885f4e5-b450-477d-8efa-436ac4b41c0c', '用户1的会议1的通知', CURRENT_TIMESTAMP, 'unread');
 
 -- 2. user: test, task_id: 1, status: read
 INSERT INTO notifications (notification_id, user_id, task_id, content, ddl, status)
-VALUES (UUID(), 'JVy6aUWEnZBqCiU', '1', '用户2的任务1的通知', CURRENT_TIMESTAMP, 'read');
+VALUES (UUID(), '2', '1', '用户2的任务1的通知', CURRENT_TIMESTAMP, 'read');
 
 -- 3. user_id: 3, task_id: 2, status: unread
 INSERT INTO notifications (notification_id, user_id, task_id, content, ddl, status)
@@ -16,11 +19,11 @@ VALUES (UUID(), '4', '3', '用户4的任务3的通知', CURRENT_TIMESTAMP, 'read
 
 -- 5. user: admin, task_id: 4, status: unread
 INSERT INTO notifications (notification_id, user_id, task_id, content, ddl, status)
-VALUES (UUID(), 'WZIuMvWHhZCIiJA', '4', '用户1的任务4的通知', CURRENT_TIMESTAMP, 'unread');
+VALUES (UUID(), '1', '4', '用户1的任务4的通知', CURRENT_TIMESTAMP, 'unread');
 
 -- 6. user: test, task_id: 2, status: read
 INSERT INTO notifications (notification_id, user_id, task_id, content, ddl, status)
-VALUES (UUID(), 'JVy6aUWEnZBqCiU', '2', '用户2的任务2的通知', CURRENT_TIMESTAMP, 'read');
+VALUES (UUID(), '2', '2', '用户2的任务2的通知', CURRENT_TIMESTAMP, 'read');
 
 -- 7. user_id: 3, task_id: 4, status: unread
 INSERT INTO notifications (notification_id, user_id, task_id, content, ddl, status)

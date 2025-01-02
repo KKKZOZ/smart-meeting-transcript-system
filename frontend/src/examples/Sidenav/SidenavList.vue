@@ -29,23 +29,11 @@
                 </sidenav-item>
             </li>
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <sidenav-item
                     to="/tables"
                     :class="getRoute() === 'tables' ? 'active' : ''"
                     :navText="isRTL ? 'الجداول' : 'Tables'"
-                >
-                    <template v-slot:icon>
-                        <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
-                    </template>
-                </sidenav-item>
-            </li>
-
-            <!-- <li class="nav-item">
-                <sidenav-item
-                    to="/new-page"
-                    :class="getRoute() === 'new-page' ? 'active' : ''"
-                    :navText="isRTL ? 'صفحة جديدة' : 'New Page'"
                 >
                     <template v-slot:icon>
                         <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>

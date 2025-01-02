@@ -1,56 +1,117 @@
-<!-- NotificationList.vue -->
 <template>
-    <div class="notification-list">
-        <h2>通知列表</h2>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-xl-10">
+                <h2 class="my-4">Notification List</h2>
 
-        <table class="notifications-table">
-            <thead>
-                <tr>
-                    <th>内容</th>
-                    <th>截止时间</th>
-                    <th>状态</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    v-for="notification in notifications"
-                    :key="notification.notification_id"
-                    class="notification-item"
-                    :class="{ unread: notification.status === 'UNREAD' }"
-                    @click="showNotificationDetail(notification)"
-                >
-                    <td class="content">
-                        {{ notification.content }}
-                    </td>
-                    <td class="time">{{ formatDate(notification.ddl) }}</td>
-                    <td class="status">
-                        {{ notification.status === 'UNREAD' ? '未读' : '已读' }}
-                    </td>
-                    <td class="actions">
-                        <button @click.stop="toggleStatus(notification)">
-                            {{ notification.status === 'UNREAD' ? '标记已读' : '标记未读' }}
-                        </button>
-                        <button
-                            class="delete"
-                            @click.stop="deleteNotification(notification.notification_id)"
-                        >
-                            删除
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                <div class="table-responsive bg-white rounded shadow-sm">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="rounded-top-start" style="width: 12%">Type</th>
+                                <th style="width: 35%">Content</th>
+                                <th style="width: 15%">DDL</th>
+                                <th style="width: 10%">Status</th>
+                                <th class="rounded-top-end" style="width: 28%">Operation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="notification in notifications"
+                                :key="notification.notification_id"
+                                :class="{ 'table-info': notification.status === 'UNREAD' }"
+                            >
+                                <td>
+                                    <span
+                                        class="badge fs-6"
+                                        :class="getNotificationType(notification).bootstrapClass"
+                                    >
+                                        {{ getNotificationType(notification).text }}
+                                    </span>
+                                </td>
+                                <td class="fs-6">{{ notification.content }}</td>
+                                <td>{{ formatDate(notification.ddl) }}</td>
+                                <td>
+                                    <span
+                                        class="badge fs-6"
+                                        :class="
+                                            notification.status === 'UNREAD'
+                                                ? 'bg-primary'
+                                                : 'bg-secondary'
+                                        "
+                                    >
+                                        {{ notification.status === 'UNREAD' ? '未读' : '已读' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="align-middle">
+                                        <div class="btn-group" role="group">
+                                            <button
+                                                class="btn btn-primary btn-sm fs-6"
+                                                @click.stop="toggleStatus(notification)"
+                                            >
+                                                {{
+                                                    notification.status === 'UNREAD'
+                                                        ? '标记已读'
+                                                        : '标记未读'
+                                                }}
+                                            </button>
+                                            <button
+                                                class="btn btn-success btn-sm fs-6"
+                                                @click.stop="handleDetailClick(notification)"
+                                            >
+                                                查看详情
+                                            </button>
+                                            <button
+                                                class="btn btn-danger btn-sm fs-6"
+                                                @click.stop="
+                                                    deleteNotification(notification.notification_id)
+                                                "
+                                            >
+                                                删除
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
     import { ref, onMounted } from 'vue';
+    import { useRouter } from 'vue-router';
     import axios from '@/axios';
 
+    const router = useRouter();
     const notifications = ref([]);
     const showDetail = ref(false);
     const selectedNotification = ref(null);
+
+    const getNotificationType = notification => {
+        if (notification.meeting_id) {
+            return {
+                text: '会议通知',
+                class: 'type-meeting',
+                bootstrapClass: 'bg-primary',
+            };
+        } else if (notification.task_id) {
+            return {
+                text: '任务通知',
+                class: 'type-task',
+                bootstrapClass: 'bg-success',
+            };
+        }
+        return {
+            text: '其他通知',
+            class: 'type-other',
+            bootstrapClass: 'bg-secondary',
+        };
+    };
 
     // 获取当前用户的通知列表
     const getNotifications = async () => {
@@ -77,8 +138,8 @@
         try {
             const newStatus = notification.status === 'UNREAD' ? 'READ' : 'UNREAD';
             const response = await axios.put(
-                `http://localhost:8000/api/notifications/${notification.notification_id}`, // 使用路径参数
-                { status: newStatus }, // 请求体中只包含 status
+                `http://localhost:8000/api/notifications/${notification.notification_id}`,
+                { status: newStatus },
             );
             const index = notifications.value.findIndex(
                 n => n.notification_id === notification.notification_id,
@@ -95,6 +156,18 @@
         showDetail.value = true;
     };
 
+    // 处理详情按钮点击
+    const handleDetailClick = notification => {
+        if (notification.meeting_id) {
+            router.push({
+                path: '/transcript-page',
+                query: { meeting_id: notification.meeting_id },
+            });
+        } else if (notification.task_id) {
+            console.debug(`需要跳转到任务详情页面，任务ID: ${notification.task_id}`);
+        }
+    };
+
     // 格式化日期
     const formatDate = date => {
         return new Date(date).toLocaleString();
@@ -106,97 +179,20 @@
 </script>
 
 <style scoped>
-    .notification-list {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
+    .btn-group .btn {
+        margin: 12px 0 !important;
     }
 
-    .notifications-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
+    @media (max-width: 768px) {
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
 
-    .notifications-table th,
-    .notifications-table td {
-        text-align: left;
-        padding: 12px;
-        border-bottom: 1px solid #ddd;
-        height: 60px; /* 设置固定高度 */
-        vertical-align: middle; /* 可选：垂直居中 */
-        background-color: white;
-    }
-
-    .notifications-table th {
-        background-color: #f5f5f5;
-        font-weight: bold;
-    }
-
-    .notification-item {
-        cursor: pointer;
-        height: 60px;
-    }
-
-    .notification-item.unread {
-        background-color: #f0f7ff;
-    }
-
-    .notification-item:hover {
-        background-color: #aed3f7;
-    }
-
-    .content {
-        font-weight: 600;
-    }
-
-    .time,
-    .status {
-        font-size: 0.9em;
-        color: #666;
-    }
-
-    .actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    .actions button {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9em;
-    }
-
-    .actions button.delete {
-        background-color: #ff4444;
-        color: white;
-    }
-
-    /* 模态框样式，如果你的 Modal 组件有自己的样式，这里可以省略 */
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        min-width: 300px;
-        max-width: 80%;
-    }
-
-    .detail-content {
-        margin: 15px 0;
+        .btn-group .btn {
+            width: 100%;
+            margin: 0;
+        }
     }
 </style>
