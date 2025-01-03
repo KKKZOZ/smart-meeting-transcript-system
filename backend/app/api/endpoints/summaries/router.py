@@ -1,9 +1,10 @@
 from app.services.summary.summarize import summary_generate
 from app.db.session import get_db
-from app.models.meeting import Meeting
+from app.models.meeting import Meeting, MeetingParticipants
 from app.models.summaries import Summary
 from app.models.transcriptions import Transcription
 from fastapi import APIRouter, Depends
+from app.core.security import get_current_user
 from sqlalchemy.orm import Session
 import logging
 
@@ -20,23 +21,37 @@ logger.addHandler(handler)
 
 
 @router.get("/getMeetingData")
-def get_meeting_data(db: Session = Depends(get_db)):
+def get_meeting_data(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
     """
-    获取所有用户
+    获取该用户所有已转录会议
     """
     meetings = db.query(
         Transcription.meeting_id,
         Transcription.timestamp,
         Transcription.content,
     ).all()
-    meetingid_list = []
+    meetingid_list0 = []
     title_list = []
     content_list = []
     timestamp_list = []
     for meeting in meetings:
-        meetingid_list.append(meeting[0])
+        meetingid_list0.append(meeting[0])
         timestamp_list.append(meeting[1])
         content_list.append(meeting[2])
+
+    meetingid_list = []
+
+    for meetingid in meetingid_list0:
+        if user.user_id in [
+            participant[0]
+            for participant in db.query(MeetingParticipants.participant_id)
+            .filter(MeetingParticipants.meeting_id == meetingid)
+            .all()
+        ]:
+            meetingid_list.append(meetingid)
 
     for meetingid in meetingid_list:
         title = db.query(Meeting.title).filter(Meeting.meeting_id == meetingid).first()
@@ -53,14 +68,9 @@ def get_meeting_data(db: Session = Depends(get_db)):
 
 @router.get("/genSummary")
 def get_summary(type, content, db: Session = Depends(get_db)):
-    logger.info("_______________________________")
-    # decoded_para = unquote(para)
-    # content, summary_type = para.split("##@##")
-    # logger.info(para)
-    logger.info(type)
-    logger.info(content)
-    # logger.info(summary_type)
-    logger.info("_______________________________")
+    """
+    spark api转录后调用该接口生成摘要
+    """
     summary = summary_generate(content, type)
     logger.info(summary)
 
@@ -70,10 +80,6 @@ def get_summary(type, content, db: Session = Depends(get_db)):
 @router.get("/confirmSummary")
 def confirm_summary(content, meeting_id, type, db: Session = Depends(get_db)):
     # 使用db.insert将content，meeting_id，type插入summaries
-    logger.info("_______________________________!!!!!!!!!!!!!!!")
-    logger.info(content)
-    logger.info(meeting_id)
-    logger.info(type)
     new_summary = Summary(meeting_id=meeting_id, content=content, summary_type=type)
     db.add(new_summary)
     db.commit()
@@ -83,7 +89,6 @@ def confirm_summary(content, meeting_id, type, db: Session = Depends(get_db)):
 
 @router.get("/checkhistory")
 def check_history(meeting_id, db: Session = Depends(get_db)):
-    logger.info("!!!!!!!!!!!______________________")
     summaries = (
         db.query(
             Summary.content,
@@ -100,10 +105,6 @@ def check_history(meeting_id, db: Session = Depends(get_db)):
         content_list.append(summary[0])
         type_list.append(summary[1])
         time_list.append(summary[2])
-    logger.info("!!!!!!!!!!!______________________")
-    logger.info(content_list)
-    logger.info(type_list)
-    logger.info(time_list)
     return {"content": content_list, "type": type_list, "time": time_list}
 
 
@@ -132,26 +133,38 @@ def delete_history(meeting_id, content, db: Session = Depends(get_db)):
 
 
 @router.get("/searchquery")
-def search_query(s_query, db: Session = Depends(get_db)):
+def search_query(
+    s_query,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
     """
-    获取所有用户
+    模糊查询所有会议
     """
-
-    logger.info("_______________________________")
-    logger.info(s_query)
     meetings = db.query(
         Transcription.meeting_id,
         Transcription.content,
         Transcription.timestamp,
     ).all()
-    meetingid_list = []
+    meetingid_list0 = []
     title_list = []
     content_list = []
     timestamp_list = []
     for meeting in meetings:
-        meetingid_list.append(meeting[0])
+        meetingid_list0.append(meeting[0])
         content_list.append(meeting[1])
         timestamp_list.append(meeting[2])
+
+    meetingid_list = []
+    for meetingid in meetingid_list0:
+        if user.user_id in [
+            participant[0]
+            for participant in db.query(MeetingParticipants.participant_id)
+            .filter(MeetingParticipants.meeting_id == meetingid)
+            .all()
+        ]:
+            meetingid_list.append(meetingid)
+
     for meetingid in meetingid_list:
         title = db.query(Meeting.title).filter(Meeting.meeting_id == meetingid).first()
         title_list.append(title[0])

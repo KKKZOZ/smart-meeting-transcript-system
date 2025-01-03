@@ -15,7 +15,7 @@
                         height: 80px;
                         background-color: #f5f5f5;
                     "
-                    >Meeting Title</th
+                    >会议名称</th
                 >
                 <th
                     style="
@@ -24,7 +24,7 @@
                         height: 80px;
                         background-color: #f5f5f5;
                     "
-                    >Meeting Content</th
+                    >会议内容</th
                 >
                 <th
                     style="
@@ -33,7 +33,7 @@
                         height: 80px;
                         background-color: #f5f5f5;
                     "
-                    >Transcription Time</th
+                    >转录时间</th
                 >
                 <th style="background-color: #f5f5f5"> </th>
                 <th style="background-color: #f5f5f5"> </th>
@@ -59,7 +59,7 @@
                             border: 2px solid gray;
                         "
                         @click="create(index)"
-                        >Create</button
+                        >创建摘要</button
                     >
                 </td>
                 <td>
@@ -71,7 +71,7 @@
                             border: 2px solid gray;
                         "
                         @click="checkHistory(index)"
-                        >History Summary</button
+                        >历史摘要</button
                     >
                 </td>
             </tr>
