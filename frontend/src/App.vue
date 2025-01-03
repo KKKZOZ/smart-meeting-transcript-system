@@ -19,7 +19,9 @@ Coded by www.creative-tim.com
     import Configurator from '@/examples/Configurator.vue';
     import Navbar from '@/examples/Navbars/Navbar.vue';
     import AppFooter from '@/examples/Footer.vue';
+    import { useRoute } from 'vue-router';
 
+    const route = useRoute();
     const store = useStore();
     const isNavFixed = computed(() => store.state.isNavFixed);
     const darkMode = computed(() => store.state.darkMode);
@@ -42,12 +44,15 @@ Coded by www.creative-tim.com
             'px-0 mx-4': !isAbsolute.value,
         };
     });
-
     async function initAuth() {
         await store.dispatch('auth/initAuth');
     }
 
     initAuth();
+    const shouldShowSidenav = computed(() => {
+        const authRoutes = ['/signin', '/signup'];
+        return showSidenav.value && !authRoutes.includes(route.path);
+    });
 </script>
 <template>
     <div class="wrapper">
@@ -56,7 +61,7 @@ Coded by www.creative-tim.com
             class="landing-bg h-100 bg-gradient-primary position-fixed w-100"
         ></div>
 
-        <sidenav v-if="showSidenav" />
+        <sidenav v-if="shouldShowSidenav" />
 
         <main class="main-content position-relative border-radius-lg">
             <!-- nav -->
