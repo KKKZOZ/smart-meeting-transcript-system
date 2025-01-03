@@ -20,11 +20,23 @@
         notification_type: '',
         frequency: '',
         password: '',
+        confirmPassword: '',
     });
 
     const handlePasswordFocus = () => {
-        userData.value.password = '';
-        console.log('password cleared');
+        if (userData.value.password === '********') {
+            userData.value.password = '';
+            userData.value.confirmPassword = '';
+            console.log('password fields cleared');
+        }
+    };
+
+    const handleConfirmPasswordFocus = () => {
+        if (userData.value.confirmPassword === '********') {
+            userData.value.password = '';
+            userData.value.confirmPassword = '';
+            console.log('password fields cleared');
+        }
     };
 
     const fetchUserData = async () => {
@@ -33,6 +45,7 @@
             console.log(response.data);
             userData.value = response.data;
             userData.value.password = '********';
+            userData.value.confirmPassword = '********';
         } catch (error) {
             console.error('获取用户数据失败:', error);
         }
@@ -40,6 +53,13 @@
 
     const handleSubmit = async () => {
         try {
+            if (userData.value.password !== '********') {
+                if (userData.value.password !== userData.value.confirmPassword) {
+                    alert('两次输入的密码不一致');
+                    return;
+                }
+            }
+
             const updateData = {
                 username: userData.value.username,
                 email: userData.value.email,
@@ -223,6 +243,18 @@
                                                 type="password"
                                                 v-model="userData.password"
                                                 @focus="handlePasswordFocus"
+                                            />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label
+                                                for="example-text-input"
+                                                class="form-control-label"
+                                                >confirm password</label
+                                            >
+                                            <argon-input
+                                                type="password"
+                                                v-model="userData.confirmPassword"
+                                                @focus="handleConfirmPasswordFocus"
                                             />
                                         </div>
                                     </div>

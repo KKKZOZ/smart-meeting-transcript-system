@@ -19,6 +19,7 @@
         email: '',
         password: '',
         nickname: '',
+        confirmPassword: '',
     });
 
     // 错误信息
@@ -27,6 +28,11 @@
     // 登录方法
     const handleRegister = async () => {
         try {
+            if (formData.value.password !== formData.value.confirmPassword) {
+                error.value = '两次输入的密码不一致';
+                return;
+            }
+
             console.log('提交的表单数据：', formData.value);
             error.value = '';
             const response = await authService.register({
@@ -235,6 +241,13 @@
                                     placeholder="Password"
                                     aria-label="Password"
                                     v-model="formData.password"
+                                />
+                                <argon-input
+                                    id="confirmPassword"
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    aria-label="Confirm Password"
+                                    v-model="formData.confirmPassword"
                                 />
                                 <argon-checkbox checked>
                                     <label class="form-check-label" for="flexCheckDefault">
