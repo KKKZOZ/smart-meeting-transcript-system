@@ -80,7 +80,7 @@ def get_all_users(db: Session = Depends(get_db)):
     获取所有用户
     """
     users = db.query(
-        User.user_id.label("participant_id"), User.username.label("participant_name")
+        User.user_id.label("participant_id"), User.nickname.label("participant_name")
     ).all()
     return users
 
