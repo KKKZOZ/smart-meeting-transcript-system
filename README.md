@@ -18,7 +18,7 @@ This project is a collaborative effort by the following team members:
 
 The Smart Meeting Transcript System offers the following key features:
 
-* **Real-time Transcription:** 🎙️ Accurately transcribes meeting audio into text in real-time, supporting multiple languages.
+* **Transcription:** 🎙️ Accurately transcribes meeting audio into text, supporting multiple languages.
 * **Intelligent Summarization:** 🧠 Generates concise and informative meeting summaries using advanced language models.
 * **Task & Action Item Extraction:** 🎯 Automatically identifies and extracts tasks, assigns them to team members, and sets due dates.
 * **Secure Data Management:** 🗄️ Provides secure storage, retrieval, and management of meeting data with robust access control.

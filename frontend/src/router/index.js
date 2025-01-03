@@ -16,6 +16,7 @@ import Notifications from '../views/Notifications.vue';
 import NewTasks from '../views/NewTasks.vue';
 import ExtractTasksFromMeetings from '../views/ExtractTasksFromMeetings.vue';
 import Meetings from '../views/Meetings.vue';
+import Introduction from '../views/Introduction.vue';
 
 const routes = [
     {
@@ -107,6 +108,11 @@ const routes = [
         path: '/meetings',
         name: 'Meetings',
         component: Meetings,
+    },
+    {
+        path: '/Introduction',
+        name: 'Introduction',
+        component: Introduction,
     },
 ];
 
