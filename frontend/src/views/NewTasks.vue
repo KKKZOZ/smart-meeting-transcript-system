@@ -7,19 +7,32 @@
                 <label>选择检查人:</label>
                 <!-- 下拉框内嵌搜索框 -->
                 <div class="dropdown">
-                    <input type="text" v-model="searchReviewer" placeholder="搜索检查人" class="search-input"
-                        @focus="showDropdownReviewer = false" @blur="hideDropdownReviewer"
-                        @input="clearSelectedReviewer" />
+                    <input
+                        type="text"
+                        v-model="searchReviewer"
+                        placeholder="搜索检查人"
+                        class="search-input"
+                        @focus="showDropdownReviewer = false"
+                        @blur="hideDropdownReviewer"
+                        @input="clearSelectedReviewer"
+                    />
                     <select v-model="selectedReviewer">
                         <option value="" disabled>请选择检查人</option>
-                        <option v-for="(user, idx) in filteredUsersReviewer" :key="idx" :value="user.id">
+                        <option
+                            v-for="(user, idx) in filteredUsersReviewer"
+                            :key="idx"
+                            :value="user.id"
+                        >
                             {{ user.nickname }} ({{ user.name }})
                         </option>
                     </select>
                     <div v-if="showDropdownReviewer" class="dropdown-list">
                         <ul>
-                            <li v-for="(user, idx) in filteredUsersReviewer" :key="idx"
-                                @click="selectReviewer(user.id)">
+                            <li
+                                v-for="(user, idx) in filteredUsersReviewer"
+                                :key="idx"
+                                @click="selectReviewer(user.id)"
+                            >
                                 {{ user.nickname }} ({{ user.name }})
                             </li>
                         </ul>
@@ -27,9 +40,7 @@
                 </div>
             </div>
             <button class="add-btn" @click="addTaskItem">增加待办事项</button>
-            <button v-if="meetingId && waiting" class="reload-btn">
-                待办事项提取中，请稍候
-            </button>
+            <button v-if="meetingId && waiting" class="reload-btn"> 待办事项提取中，请稍候 </button>
             <button v-if="meetingId && !waiting" class="reload-btn" @click="reextract">
                 提取结果不满意？重试
             </button>
@@ -49,20 +60,34 @@
                     <label>执行人:</label>
                     <!-- 每个待办事项的执行人搜索框是独立的 -->
                     <div class="dropdown">
-                        <input type="text" v-model="task.searchExecutor" placeholder="搜索执行人" class="search-input"
-                            @focus="showDropdownExecutor = false" @blur="hideDropdownExecutor"
-                            @input="clearSelectedExecutor(task)" />
+                        <input
+                            type="text"
+                            v-model="task.searchExecutor"
+                            placeholder="搜索执行人"
+                            class="search-input"
+                            @focus="showDropdownExecutor = false"
+                            @blur="hideDropdownExecutor"
+                            @input="clearSelectedExecutor(task)"
+                        />
                         <select v-model="task.executor">
                             <option value="" disabled>请选择执行人</option>
-                            <option v-for="(user, idx) in filteredUsersExecutor(task.searchExecutor)" :key="idx"
-                                :value="user.id">
+                            <option
+                                v-for="(user, idx) in filteredUsersExecutor(task.searchExecutor)"
+                                :key="idx"
+                                :value="user.id"
+                            >
                                 {{ user.nickname }} ({{ user.name }})
                             </option>
                         </select>
                         <div v-if="showDropdownExecutor" class="dropdown-list">
                             <ul>
-                                <li v-for="(user, idx) in filteredUsersExecutor(task.searchExecutor)" :key="idx"
-                                    @click="selectExecutor(task, user.id)">
+                                <li
+                                    v-for="(user, idx) in filteredUsersExecutor(
+                                        task.searchExecutor,
+                                    )"
+                                    :key="idx"
+                                    @click="selectExecutor(task, user.id)"
+                                >
                                     {{ user.nickname }} ({{ user.name }})
                                 </li>
                             </ul>
@@ -143,18 +168,20 @@
     // 模拟获取初始传入的待办事项（例如，来自 URL 或 API）
     const getInitialTasks = async () => {
         const response = await axios.post('/api/llm-extraction', {
-            meeting_id: meetingId.value
+            meeting_id: meetingId.value,
         });
         var msg = response.data.message;
-        if (msg === "fail") {
-            alert("提取待办事项失败");
+        if (msg === 'fail') {
+            alert('提取待办事项失败');
             return;
         }
         const initialTasks = response.data.data;
 
         // 根据executor的用户名来匹配对应的id或nickname
         taskList.value = initialTasks.map(task => {
-            const executorUser = users.value.find(user => user.name === task.executor || user.nickname === task.executor);
+            const executorUser = users.value.find(
+                user => user.name === task.executor || user.nickname === task.executor,
+            );
             if (executorUser) {
                 task.executor = executorUser.id; // 如果有匹配的用户，则使用id
             } else {
@@ -175,7 +202,6 @@
                     task.dueDate = '';
                     task.dueTime = { hours: '', minutes: '' };
                 }
-
             }
 
             return task;
@@ -184,19 +210,27 @@
     };
 
     // 根据每个待办事项的searchExecutor来过滤用户列表 - 执行人
-    const filteredUsersExecutor = (searchText) => {
+    const filteredUsersExecutor = searchText => {
         const searchQuery = searchText.toLowerCase();
-        return users.value.filter(user => user.name.toLowerCase().includes(searchQuery) || user.nickname.toLowerCase().includes(searchQuery));
+        return users.value.filter(
+            user =>
+                user.name.toLowerCase().includes(searchQuery) ||
+                user.nickname.toLowerCase().includes(searchQuery),
+        );
     };
 
     // 根据搜索值过滤用户列表 - 检查人
     const filteredUsersReviewer = computed(() => {
         const searchText = searchReviewer.value.toLowerCase();
-        return users.value.filter(user => user.name.toLowerCase().includes(searchText) || user.nickname.toLowerCase().includes(searchText));
+        return users.value.filter(
+            user =>
+                user.name.toLowerCase().includes(searchText) ||
+                user.nickname.toLowerCase().includes(searchText),
+        );
     });
 
     // 选择检查人
-    const selectReviewer = (id) => {
+    const selectReviewer = id => {
         selectedReviewer.value = id;
         searchReviewer.value = ''; // 清空搜索框
         showDropdownReviewer.value = false; // 隐藏下拉框
@@ -216,12 +250,12 @@
             executor: '',
             dueDate: '',
             dueTime: { hours: '', minutes: '' },
-            searchExecutor: '' // 每个待办事项有独立的执行人搜索框
+            searchExecutor: '', // 每个待办事项有独立的执行人搜索框
         });
     };
 
     // 删除待办事项
-    const deleteTaskItem = (index) => {
+    const deleteTaskItem = index => {
         taskList.value.splice(index, 1);
     };
 
@@ -229,7 +263,13 @@
     const submitTaskList = async () => {
         // 检查待办事项是否填写完整
         for (let task of taskList.value) {
-            if (!task.content || !task.executor || !task.dueDate || !task.dueTime.hours || !task.dueTime.minutes) {
+            if (
+                !task.content ||
+                !task.executor ||
+                !task.dueDate ||
+                !task.dueTime.hours ||
+                !task.dueTime.minutes
+            ) {
                 alert('请填写所有待办事项的内容、执行人和截止时间');
                 return;
             }
@@ -257,12 +297,12 @@
         const response = await axios.post('/api/create-tasks', {
             inspector: selectedReviewer.value,
             meeting_id: meetingId.value,
-            tasks: tasksToStore
+            tasks: tasksToStore,
         });
 
-        if (response.data.message === "success") {
+        if (response.data.message === 'success') {
             alert('待办事项创建成功！');
-            router.push("/tasks");
+            router.push('/tasks');
         } else {
             alert('待办事项创建失败');
         }
@@ -276,7 +316,7 @@
     };
 
     // 清除执行人
-    const clearSelectedExecutor = (task) => {
+    const clearSelectedExecutor = task => {
         if (!task.searchExecutor) {
             task.executor = '';
         }
@@ -498,4 +538,3 @@
         background-color: #f0f0f0;
     }
 </style>
-

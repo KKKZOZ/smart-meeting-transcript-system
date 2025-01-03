@@ -223,6 +223,7 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
     if not meeting:
         return {"error": "Meeting not found"}
 
+    meeting_title = meeting.title
     video_url = meeting.video_url
 
     # 2. 调用create_task，获取返回值并提取taskId
@@ -274,7 +275,7 @@ async def transcript(meeting_id: str = Form(...), db: Session = Depends(get_db))
             notification = NotificationCreate(
                 # task_id="",
                 meeting_id=meeting_id,
-                content=f"会议 {meeting_id} 的转录任务已完成。请查看转录内容。",
+                content=f"会议 {meeting_title} 的转录任务已完成。请查看转录内容。",
                 ddl=datetime.utcnow(),
             )
 

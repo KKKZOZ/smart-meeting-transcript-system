@@ -1,61 +1,94 @@
 <template>
-    <div class="create-meeting">
-        <h2>创建新会议</h2>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0 fs-4 text-white">创建新会议</h2>
+                    </div>
 
-        <!-- 表单部分 -->
-        <form @submit.prevent="submitMeeting">
-            <!-- 会议名称 -->
-            <div class="form-group">
-                <label for="meeting-name">会议名称:</label>
-                <input
-                    id="meeting-name"
-                    v-model="meeting.name"
-                    type="text"
-                    placeholder="请在框内输入会议名称"
-                    required
-                />
+                    <div class="card-body">
+                        <form @submit.prevent="submitMeeting">
+                            <!-- 会议名称 -->
+                            <div class="mb-3">
+                                <label for="meeting-name" class="form-label">会议名称</label>
+                                <input
+                                    id="meeting-name"
+                                    v-model="meeting.name"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="请在框内输入会议名称"
+                                    required
+                                />
+                            </div>
+
+                            <!-- 起止时间 -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="start-time" class="form-label">会议开始时间</label>
+                                    <input
+                                        id="start-time"
+                                        v-model="meeting.startTime"
+                                        type="datetime-local"
+                                        class="form-control"
+                                        required
+                                    />
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="end-time" class="form-label">会议结束时间</label>
+                                    <input
+                                        id="end-time"
+                                        v-model="meeting.endTime"
+                                        type="datetime-local"
+                                        class="form-control"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- 会议语言 -->
+                            <div class="mb-3">
+                                <label for="language" class="form-label">请选择会议主语言</label>
+                                <select
+                                    id="language"
+                                    v-model="meeting.language"
+                                    class="form-select"
+                                    required
+                                >
+                                    <option value="zh">汉语</option>
+                                    <option value="en">英语</option>
+                                </select>
+                            </div>
+
+                            <!-- 参会人员 -->
+                            <div class="mb-3">
+                                <label class="form-label">参会人员</label>
+                                <el-select
+                                    v-model="value1"
+                                    multiple
+                                    collapse-tags
+                                    collapse-tags-tooltip
+                                    placeholder="选择"
+                                    class="w-100"
+                                >
+                                    <el-option
+                                        v-for="item in options"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value"
+                                    />
+                                </el-select>
+                            </div>
+
+                            <!-- 提交按钮 -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">创建会议</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            <!-- 起止时间 -->
-            <div class="form-group">
-                <label for="start-time">会议开始时间:</label>
-                <input id="start-time" v-model="meeting.startTime" type="datetime-local" required />
-
-                <label for="end-time">会议结束时间:</label>
-                <input id="end-time" v-model="meeting.endTime" type="datetime-local" required />
-            </div>
-
-            <!-- 会议语言 -->
-            <div class="form-group">
-                <label for="language">请选择会议主语言:</label>
-                <select id="language" v-model="meeting.language" required>
-                    <option value="zh">汉语</option>
-                    <option value="en">英语</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <p>参会人员</p>
-                <el-select
-                    v-model="value1"
-                    multiple
-                    collapse-tags
-                    collapse-tags-tooltip
-                    placeholder="选择"
-                    style="width: 240px"
-                >
-                    <el-option
-                        v-for="item in options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                    />
-                </el-select>
-            </div>
-
-            <!-- 提交按钮 -->
-            <button type="submit">创建会议</button>
-        </form>
+        </div>
     </div>
 </template>
 
@@ -120,45 +153,7 @@
 </script>
 
 <style scoped>
-    .create-meeting {
-        max-width: 600px;
-        margin: 20px auto;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-
-    input,
-    select {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    button:hover {
-        background-color: #0056b3;
+    .el-select {
+        width: 100% !important;
     }
 </style>
