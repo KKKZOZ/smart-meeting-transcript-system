@@ -17,7 +17,10 @@
     const unreadCount = computed(() => store.state.notifications.unreadCount);
 
     onMounted(() => {
-        store.dispatch('fetchUnreadCount');
+        const publicPages = ['signin', 'signup'];
+        if (!publicPages.includes(getRoute())) {
+            store.dispatch('fetchUnreadCount');
+        }
     });
 </script>
 <template>

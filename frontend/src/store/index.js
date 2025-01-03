@@ -1,9 +1,11 @@
 import { createStore } from 'vuex';
 import notifications from './modules/notifications';
+import auth from './modules/auth';
 
 export default createStore({
     modules: {
         notifications,
+        auth
     },
     state: {
         hideConfigButton: false,

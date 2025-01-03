@@ -22,37 +22,44 @@
     // 错误信息
     const error = ref('');
 
-    // 登录方法
-    const handleLogin = async () => {
-        try {
-            error.value = '';
-            const response = await authService.login({
-                username: formData.value.username,
-                password: formData.value.password,
-            });
-
-            console.log('Login Response:', response);
-
-            if (response.access_token) {
-                if (formData.value.rememberMe) {
-                    localStorage.setItem('username', formData.value.username);
-                }
-
-                alert('登录成功！');
-                router.push('/dashboard-default');
-            }
-        } catch (err) {
-            error.value = err.message || '登录失败，请重试';
-        }
-    };
-
+    // 检查是否已经登录，如果已登录则直接跳转
     onBeforeMount(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            router.push('/dashboard-default');
+            return;
+        }
+
+        // 设置页面状态
         store.state.hideConfigButton = true;
         store.state.showNavbar = false;
         store.state.showSidenav = false;
         store.state.showFooter = false;
         body.classList.remove('bg-gray-100');
     });
+
+    // 登录方法
+    const handleLogin = async () => {
+        try {
+            error.value = '';
+            // 使用 vuex action 处理登录
+            await store.dispatch('auth/login', {
+                username: formData.value.username,
+                password: formData.value.password,
+            });
+
+            // 记住用户名（如果选择了记住我）
+            if (formData.value.rememberMe) {
+                localStorage.setItem('username', formData.value.username);
+            }
+
+            alert('登录成功！');
+            router.push('/dashboard-default');
+        } catch (err) {
+            error.value = err.message || '登录失败，请重试';
+        }
+    };
+
     onBeforeUnmount(() => {
         store.state.hideConfigButton = false;
         store.state.showNavbar = true;

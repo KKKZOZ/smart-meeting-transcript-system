@@ -1,12 +1,14 @@
 <script setup>
     import { computed, ref } from 'vue';
     import { useStore } from 'vuex';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import Breadcrumbs from '../Breadcrumbs.vue';
 
     const showMenu = ref(false);
     const store = useStore();
+    const router = useRouter();
     const isRTL = computed(() => store.state.isRTL);
+    const isLoggedIn = computed(() => store.state.auth?.isLoggedIn || false);
 
     const route = useRoute();
 
@@ -25,6 +27,14 @@
         setTimeout(() => {
             showMenu.value = false;
         }, 100);
+    };
+
+    const handleLogoutAction = () => {
+        if (isLoggedIn.value) {
+            // 登出逻辑
+            store.dispatch('auth/logout');
+            router.push({ name: 'Signin' });
+        }
     };
 </script>
 <template>
@@ -60,10 +70,19 @@
                 </div>
                 <ul class="navbar-nav justify-content-end">
                     <li class="nav-item d-flex align-items-center">
+                        <a
+                            v-if="isLoggedIn"
+                            @click="handleLogoutAction"
+                            class="px-0 nav-link font-weight-bold text-white cursor-pointer"
+                        >
+                            <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-2'"></i>
+                            <span v-if="isRTL" class="d-sm-inline d-none">تسجيل خروج</span>
+                            <span v-else class="d-sm-inline d-none">Log Out</span>
+                        </a>
                         <router-link
+                            v-else
                             :to="{ name: 'Signin' }"
                             class="px-0 nav-link font-weight-bold text-white"
-                            target="_blank"
                         >
                             <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-2'"></i>
                             <span v-if="isRTL" class="d-sm-inline d-none">يسجل دخول</span>

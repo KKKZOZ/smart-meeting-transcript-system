@@ -1,5 +1,9 @@
 // src/axios.js
 import axios from 'axios';
+import store from '@/store'; 
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const instance = axios.create({
     baseURL: 'http://localhost:8000', // 本地后端接口的基础 URL
@@ -22,22 +26,23 @@ instance.interceptors.request.use(
     },
 );
 
+
+
 // 响应拦截器
 instance.interceptors.response.use(
     response => {
-        // 对响应数据做处理
         return response;
     },
     error => {
-        // 对响应错误做处理
-        if (error.response?.status === 401) {
-            // token 过期或无效时的处理
+        if (error.response?.status === 401 ) {
             localStorage.removeItem('token');
-            window.location.href = '/signin';
+            store.dispatch('auth/logout');
+            if (router.currentRoute.value.path !== '/signin') {
+                router.push('/signin');
+            }
         }
-        console.log('Error:', error.response.data);
         return Promise.reject(error);
-    },
+    }
 );
 
 export default instance;
