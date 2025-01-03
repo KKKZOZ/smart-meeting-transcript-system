@@ -123,7 +123,7 @@
                     ACCOUNT PAGES
                 </h6>
             </li>
-
+            <!-- 
             <li class="nav-item">
                 <sidenav-item
                     to="/profile"
@@ -159,6 +159,7 @@
                     </template>
                 </sidenav-item>
             </li>
+            -->
         </ul>
     </div>
 </template>

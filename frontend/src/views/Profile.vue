@@ -78,7 +78,7 @@
             alert('个人资料更新成功！');
         } catch (error) {
             console.error('更新用户数据失败:', error);
-            alert('更新失败：' + (error.response?.data?.detail || error.message));
+            alert('更新失败：' + (error.response?.data?.errors[0]?.message || error.message));
         }
     };
 
