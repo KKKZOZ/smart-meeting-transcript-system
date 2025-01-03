@@ -3,7 +3,7 @@ import authService from '@/services/authService'
 export default {
     namespaced: true,
     state: {
-        isLoggedIn: false,
+        isLoggedIn: !!localStorage.getItem('token'),
         user: null,
         token: localStorage.getItem('token') || null
     },
@@ -24,6 +24,24 @@ export default {
         }
     },
     actions: {
+        async initAuth({ commit }) {
+            console.log('initAuth');
+            const token = localStorage.getItem('token');
+            console.log('token',token);
+            if (token) {
+                try {
+                    commit('SET_TOKEN', token);
+                    const user = await authService.getUserInfo()
+                    commit('SET_USER', user)
+                    commit('SET_LOGIN_STATE', true)
+                } catch (error) {
+                    localStorage.removeItem('token')
+                    commit('SET_TOKEN', null)
+                    commit('SET_USER', null)
+                    commit('SET_LOGIN_STATE', false)
+                }
+            }
+        },
         async login({ commit }, credentials) {
             try {
                 const response = await authService.login(credentials)
@@ -38,6 +56,7 @@ export default {
         },
         
         async logout({ commit }) {
+            localStorage.removeItem('token')
             commit('SET_TOKEN', null)
             commit('SET_USER', null)
             commit('SET_LOGIN_STATE', false)

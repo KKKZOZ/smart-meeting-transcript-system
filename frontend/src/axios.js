@@ -1,9 +1,7 @@
 // src/axios.js
 import axios from 'axios';
 import store from '@/store'; 
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
+import router from '@/router';
 
 const instance = axios.create({
     baseURL: 'http://localhost:8000', // 本地后端接口的基础 URL
@@ -34,10 +32,12 @@ instance.interceptors.response.use(
         return response;
     },
     error => {
-        if (error.response?.status === 401 ) {
+        if (error.response?.status === 401) {
+            console.log('401 错误，当前路由：', router.currentRoute.value.path);
             localStorage.removeItem('token');
             store.dispatch('auth/logout');
             if (router.currentRoute.value.path !== '/signin') {
+                console.log('准备跳转到登录页');
                 router.push('/signin');
             }
         }

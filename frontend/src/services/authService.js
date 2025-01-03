@@ -17,4 +17,8 @@ export default {
         })
         return response.data
     },
+    async getUserInfo() {
+        const response = await axios.get('/api/me')
+        return response.data
+    }
 }

@@ -42,6 +42,12 @@ Coded by www.creative-tim.com
             'px-0 mx-4': !isAbsolute.value,
         };
     });
+
+    async function initAuth() {
+        await store.dispatch('auth/initAuth');
+    }
+
+    initAuth();
 </script>
 <template>
     <div class="wrapper">
