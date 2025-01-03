@@ -16,7 +16,6 @@ Coded by www.creative-tim.com
     import { computed } from 'vue';
     import { useStore } from 'vuex';
     import Sidenav from './examples/Sidenav';
-    import Configurator from '@/examples/Configurator.vue';
     import Navbar from '@/examples/Navbars/Navbar.vue';
     import AppFooter from '@/examples/Footer.vue';
     import { useRoute } from 'vue-router';
@@ -72,11 +71,6 @@ Coded by www.creative-tim.com
             </div>
 
             <app-footer v-show="showFooter" />
-
-            <configurator
-                :toggle="toggleConfigurator"
-                :class="[showConfig ? 'show' : '', hideConfigButton ? 'd-none' : '']"
-            />
         </main>
     </div>
 </template>
