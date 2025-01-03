@@ -37,6 +37,18 @@
 
             <li class="nav-item">
                 <sidenav-item
+                    to="/meetings"
+                    :class="getRoute() === 'meetings' ? 'active' : ''"
+                    :navText="isRTL ? 'صفحة جديدة' : 'Meetings'"
+                >
+                    <template v-slot:icon>
+                        <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
+                    </template>
+                </sidenav-item>
+            </li>
+
+            <!-- <li class="nav-item">
+                <sidenav-item
                     to="/create-trans"
                     :class="getRoute() === 'create-trans' ? 'active' : ''"
                     :navText="isRTL ? 'صفحة جديدة' : 'Transcript'"
@@ -45,7 +57,7 @@
                         <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
                     </template>
                 </sidenav-item>
-            </li>
+            </li> -->
 
             <li class="nav-item">
                 <sidenav-item

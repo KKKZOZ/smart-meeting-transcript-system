@@ -1,38 +1,54 @@
 <template>
-    <div class="app-container">
-        <!-- 控制显示上传组件还是文本和播放器 -->
-        <div v-if="isTranscribed === -1" class="upload-section">
-            <el-upload
-                class="upload"
-                drag
-                :before-upload="beforeUpload"
-                accept="audio/*"
-                :limit="1"
-            >
-                <el-icon class="el-icon--upload">
-                    <UploadFilled />
-                </el-icon>
-                <div class="el-upload__text">Drop file here or <em>click to upload</em></div>
-                <template #tip>
-                    <div class="el-upload__tip">Upload audio files (MP3 or WAV, under 50MB)</div>
-                </template>
-            </el-upload>
-            <div v-if="fileToUpload" class="selected-file">
-                <p>已选择文件：{{ fileToUpload.name }}</p>
+    <div class="container-fluid py-4">
+        <!-- 上传部分 -->
+        <div v-if="isTranscribed === -1" class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center p-5">
+                        <el-upload
+                            class="upload-area"
+                            drag
+                            :before-upload="beforeUpload"
+                            accept="audio/*"
+                            :limit="1"
+                        >
+                            <el-icon class="el-icon--upload fs-1 mb-3">
+                                <UploadFilled />
+                            </el-icon>
+                            <div class="el-upload__text mb-2"
+                                >拖拽文件到此处或 <em>点击上传</em></div
+                            >
+                            <template #tip>
+                                <div class="text-muted small"
+                                    >支持上传音频文件 (MP3 或 WAV, 小于 50MB)</div
+                                >
+                            </template>
+                        </el-upload>
+
+                        <div v-if="fileToUpload" class="alert alert-info mt-3">
+                            <p class="mb-0 text-white">已选择文件：{{ fileToUpload.name }}</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <el-button type="primary" size="large" @click="handleUpload">
+                                开始上传
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- 上传按钮 -->
-            <el-button type="primary" @click="handleUpload">开始上传</el-button>
         </div>
 
-        <!-- 显示文本和音频播放器 -->
+        <!-- 转录内容显示部分 -->
         <div v-else class="transcript-section">
-            <div class="text-display">
-                <div class="left-text" style="max-height: 65vh">
-                    <el-container>
-                        <el-header>
-                            <span style="font-size: 30px; font-weight: bold; padding-right: 20px"
-                                >会议转录</span
-                            >
+            <div class="row g-4">
+                <!-- 左侧转录内容 -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div
+                            class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                        >
+                            <h5 class="mb-0 text-white fs-3">会议转录</h5>
                             <el-button
                                 v-if="isTranscribed === 2"
                                 type="primary"
@@ -46,9 +62,8 @@
                             >
                                 对应参会人员
                             </el-button>
-                        </el-header>
-                        <el-main style="max-height: 55vh; overflow-y: auto; margin-top: 30px">
-                            <!-- 对话框 -->
+                        </div>
+                        <div class="card-body" style="height: 55vh; overflow-y: auto">
                             <el-dialog v-model="dialogVisible" title="对应参会人员" width="500">
                                 <div
                                     v-for="index in count"
@@ -78,63 +93,58 @@
                                     </div>
                                 </template>
                             </el-dialog>
-                            <pre style="white-space: pre-wrap; word-wrap: break-word">{{
-                                Text || '请点击生成文字'
-                            }}</pre>
+
+                            <pre class="text-wrap mb-3 fs-5">{{ Text || '请点击生成文字' }}</pre>
+
                             <el-button
                                 v-if="isTranscribed === 0"
                                 type="primary"
                                 @click="createTasks"
                                 >生成文字</el-button
                             >
-                        </el-main>
-                    </el-container>
+                        </div>
+                    </div>
                 </div>
-                <div class="right-text" style="max-height: 65vh">
-                    <el-container>
-                        <el-header>
-                            <span style="font-size: 30px; font-weight: bold; padding-right: 20px"
-                                >翻译</span
-                            ><br />
-                            <el-select
-                                v-model="value"
-                                v-if="[1, 2].includes(isTranscribed)"
-                                placeholder="Select"
-                                style="width: 240px"
-                            >
-                                <el-option
-                                    v-for="item in options"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value"
-                                />
-                            </el-select>
-                            <el-button
-                                v-if="[1, 2].includes(isTranscribed)"
-                                type="primary"
-                                class="translate-button"
-                                @click="translateTasks"
-                                >翻译</el-button
-                            >
-                        </el-header>
-                        <el-main style="max-height: 55vh; overflow-y: auto; margin-top: 30px">
-                            <pre
-                                style="white-space: pre-wrap; word-wrap: break-word"
-                                v-if="[1, 2].includes(isTranscribed)"
-                                >{{ translateText || '请选择要翻译成的语言' }}</pre
-                            >
-                            <p v-if="[-1, 0].includes(isTranscribed)">{{ '请先转录会议' }}</p>
-                        </el-main>
-                    </el-container>
+
+                <!-- 右侧翻译内容 -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0 text-white fs-3">翻译</h5>
+                            <div class="mt-2 d-flex gap-2" v-if="[1, 2].includes(isTranscribed)">
+                                <el-select v-model="value" placeholder="Select" class="flex-grow-1">
+                                    <el-option
+                                        v-for="item in options"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value"
+                                    />
+                                </el-select>
+                                <el-button type="primary" @click="translateTasks"> 翻译 </el-button>
+                            </div>
+                        </div>
+                        <div class="card-body" style="height: 55vh; overflow-y: auto">
+                            <pre v-if="[1, 2].includes(isTranscribed)" class="text-wrap fs-5">
+                                {{ translateText || '请选择要翻译成的语言' }}
+                            </pre>
+                            <p v-if="[-1, 0].includes(isTranscribed)" class="text-muted">
+                                请先转录会议
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- 音频播放器 -->
-            <div class="audio-player">
-                <audio ref="audioPlayer" controls>
-                    <source :src="audioSrc" type="audio/mp3" />
-                    Your browser does not support the audio element.
-                </audio>
+            <div class="mt-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <audio ref="audioPlayer" controls class="w-100">
+                            <source :src="audioSrc" type="audio/mp3" />
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -143,7 +153,7 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import { UploadFilled } from '@element-plus/icons-vue';
-    import axios from 'axios';
+    import axios from '@/axios';
     import { ElMessage } from 'element-plus';
     import { useRoute } from 'vue-router';
 
@@ -187,7 +197,7 @@
     // 获取转录状态
     const getTranscriptionStatus = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/getTransStatus', {
+            const response = await axios.get('/api/getTransStatus', {
                 params: { meeting_id: meetingId },
             });
             console.log(response);
@@ -213,7 +223,7 @@
 
     const fetchParticipants = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/getParticipants', {
+            const response = await axios.get('/api/getParticipants', {
                 params: { meeting_id: meetingId },
             }); // 请求用户数据的 API
             speakerOptions.value = response.data.map(user => ({
@@ -241,7 +251,7 @@
 
             // 手动上传文件到后端
             axios
-                .post('http://localhost:8000/api/upload', formData, {
+                .post('/api/upload', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 })
                 .then(response => {
@@ -273,7 +283,7 @@
             formData.append('speakers', JSON.stringify(selections.value)); // 将选择器的值序列化为 JSON
 
             // 发送请求到后端
-            const response = await axios.post('http://localhost:8000/api/setSpeaker', formData, {
+            const response = await axios.post('/api/setSpeaker', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data', // 设置表单数据类型
                 },
@@ -300,7 +310,7 @@
                 '正在转录中，请稍候。系统会在转录完成后通知您，请在收到通知后刷新该页面查看内容。';
             const formData = new FormData();
             formData.append('meeting_id', meetingId);
-            const response = await axios.post('http://localhost:8000/api/transcript', formData, {
+            const response = await axios.post('/api/transcript', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data', // 设置表单数据类型
                 },
@@ -319,7 +329,7 @@
             const formData = new FormData();
             formData.append('meeting_id', meetingId);
             formData.append('to_language', value.value);
-            const response = await axios.post('http://localhost:8000/api/translate', formData, {
+            const response = await axios.post('/api/translate', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data', // 设置表单数据类型
                 },
@@ -335,68 +345,36 @@
 </script>
 
 <style scoped>
-    .app-container {
-        max-width: 80%; /* 设置为宽度的 80% */
-        height: 80vh; /* 设置高度为视口的 80% */
-        margin: 0 auto;
-        padding: 5px;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center; /* 垂直居中 */
-    }
-
-    .text-display {
-        width: 100%;
-        height: 65vh; /* 设置固定高度为屏幕的 70% */
+    .upload-area {
+        min-height: 300px;
         display: flex;
-        justify-content: space-between;
-        padding: 40px;
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        overflow-y: auto; /* 超出时显示垂直滚动条 */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
-    .text-display .left-text,
-    .text-display .right-text {
-        width: 45%; /* 保持左右两部分的宽度为 45% */
-    }
-
-    .text-display h3 {
-        color: #333;
-    }
-
-    .text-display p {
-        color: #555;
-        white-space: normal; /* 允许自动换行 */
-        word-wrap: break-word; /* 强制长单词换行 */
-    }
-
-    .upload-section {
-        margin-bottom: 20px;
-        height: 60vh;
-    }
-
-    .audio-player {
+    /* 保持 Element Plus 上传组件的样式 */
+    :deep(.el-upload-dragger) {
         width: 100%;
+        height: 200px;
+        max-width: 400px;
     }
 
-    audio {
-        width: 100%;
-        outline: none;
+    /* 自定义滚动条样式 */
+    ::-webkit-scrollbar {
+        width: 8px;
     }
 
-    .action-buttons {
-        margin-top: 10px;
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
     }
 
-    .action-buttons .el-button {
-        margin-left: 10px;
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
     }
 
-    .translate-button {
-        margin-top: auto; /* 将按钮推到最底部 */
-        font-size: 12px;
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 </style>

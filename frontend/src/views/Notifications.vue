@@ -29,7 +29,7 @@
                                         {{ getNotificationType(notification).text }}
                                     </span>
                                 </td>
-                                <td class="fs-6">{{ notification.content }}</td>
+                                <td class="fs-6 content-cell">{{ notification.content }}</td>
                                 <td>{{ formatDate(notification.ddl) }}</td>
                                 <td>
                                     <span
@@ -116,7 +116,7 @@
     // 获取当前用户的通知列表
     const getNotifications = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/notifications/users');
+            const response = await axios.get('/api/notifications/users');
             notifications.value = response.data;
         } catch (error) {
             console.error('获取通知列表失败:', error);
@@ -127,7 +127,7 @@
     const deleteNotification = async id => {
         try {
             const notification = notifications.value.find(n => n.notification_id === id);
-            await axios.delete(`http://localhost:8000/api/notifications/${id}`);
+            await axios.delete(`/api/notifications/${id}`);
             notifications.value = notifications.value.filter(n => n.notification_id !== id);
 
             // 如果删除的是未读通知，更新计数
@@ -145,10 +145,9 @@
             const oldStatus = notification.status;
             const newStatus = oldStatus === 'UNREAD' ? 'READ' : 'UNREAD';
 
-            const response = await axios.put(
-                `http://localhost:8000/api/notifications/${notification.notification_id}`,
-                { status: newStatus },
-            );
+            const response = await axios.put(`/api/notifications/${notification.notification_id}`, {
+                status: newStatus,
+            });
 
             const index = notifications.value.findIndex(
                 n => n.notification_id === notification.notification_id,
@@ -190,6 +189,13 @@
 <style scoped>
     .btn-group .btn {
         margin: 12px 0 !important;
+    }
+
+    .content-cell {
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     @media (max-width: 768px) {

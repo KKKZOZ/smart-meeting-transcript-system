@@ -21,7 +21,7 @@ export default {
     actions: {
         async fetchUnreadCount({ commit }) {
             try {
-                const response = await axios.get('http://localhost:8000/api/notifications/users');
+                const response = await axios.get('/api/notifications/users');
                 const count = response.data.filter(n => n.status === 'UNREAD').length;
                 commit('SET_UNREAD_COUNT', count);
             } catch (error) {

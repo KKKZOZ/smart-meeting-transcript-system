@@ -85,6 +85,7 @@ def create_notification(
     new_notification = Notification(
         notification_id=str(uuid.uuid4()),
         user_id=user_id,
+        meeting_id=notification_in.meeting_id,
         task_id=notification_in.task_id,
         content=notification_in.content,
         ddl=notification_in.ddl,

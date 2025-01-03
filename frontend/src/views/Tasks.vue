@@ -36,7 +36,8 @@
                         <th>执行人</th>
                         <th>截止时间</th>
                         <th>状态</th>
-                        <th>操作</th> <!-- 新增操作列 -->
+                        <th>操作</th>
+                        <!-- 新增操作列 -->
                     </tr>
                 </thead>
                 <tbody>
@@ -50,13 +51,22 @@
                             <td>{{ new Date(task.due_date).toLocaleString() }}</td>
                             <td>
                                 <!-- 状态列，待处理和已完成后面加图标 -->
-                                <span :class="{ 'pending': task.status === '待处理', 'completed': task.status === '已完成' }">
+                                <span
+                                    :class="{
+                                        pending: task.status === '待处理',
+                                        completed: task.status === '已完成',
+                                    }"
+                                >
                                     {{ task.status }}
                                 </span>
                             </td>
                             <td>
                                 <!-- 只有待处理状态时显示提醒按钮 -->
-                                <button v-if="task.status === '待处理'" @click="remind(task)" class="remind-btn">
+                                <button
+                                    v-if="task.status === '待处理'"
+                                    @click="remind(task)"
+                                    class="remind-btn"
+                                >
                                     提醒
                                 </button>
                             </td>
@@ -87,10 +97,16 @@
                             <td>{{ new Date(task.due_date).toLocaleString() }}</td>
                             <td>{{ task.status }}</td>
                             <td>
-                                <button v-if="task.status === '待处理'" @click="submitTask(task)" class="submit-btn">
+                                <button
+                                    v-if="task.status === '待处理'"
+                                    @click="submitTask(task)"
+                                    class="submit-btn"
+                                >
                                     提交
                                 </button>
-                                <span v-else-if="task.status === '已完成'" class="completed-icon">✔</span>
+                                <span v-else-if="task.status === '已完成'" class="completed-icon"
+                                    >✔</span
+                                >
                             </td>
                         </tr>
                     </template>
@@ -110,7 +126,6 @@
     const checkTasks = ref([]); // 从服务器获取的待检查任务列表
     const executeTasks = ref([]); // 从服务器获取的待执行任务列表
     const dropdownTimeout = ref(null); // 定时器用于控制下拉按钮消失延时
-
 
     // 将待检查任务按 ID 分组
     const groupedCheckTasks = computed(() => {
@@ -162,12 +177,12 @@
     const selectTab = tab => {
         selectedTab.value = tab;
     };
-    const submitTask = async (task) => {
+    const submitTask = async task => {
         // 提交任务处理逻辑
         const response = await axios.post('/api/submit-tasks', {
-            task_id: task.task_id
+            task_id: task.task_id,
         });
-        if (response.data.message == "success") {
+        if (response.data.message == 'success') {
             alert(`任务已提交！`);
             router.go(0);
         } else {
@@ -176,11 +191,11 @@
     };
 
     // 提醒逻辑，提醒按钮点击时执行
-    const remind = async (task) => {
+    const remind = async task => {
         const response = await axios.post('/api/remind-tasks', {
-            task_id: task.task_id
+            task_id: task.task_id,
         });
-        if (response.data.message == "success") {
+        if (response.data.message == 'success') {
             alert(`任务已提醒！`);
         } else {
             alert(`任务提醒失败`);
@@ -386,4 +401,3 @@
         font-weight: bold;
     }
 </style>
-
