@@ -6,18 +6,8 @@ from app.models.transcriptions import Transcription
 from fastapi import APIRouter, Depends
 from app.core.security import get_current_user
 from sqlalchemy.orm import Session
-import logging
 
 router = APIRouter()
-
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-handler.setLevel(logging.INFO)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 
 @router.get("/getMeetingData")
@@ -39,9 +29,8 @@ def get_meeting_data(
     timestamp_list = []
     for meeting in meetings:
         meetingid_list0.append(meeting[0])
-        timestamp_list.append(meeting[1])
+        timestamp_list.append(str(meeting[1]).replace("T", " ").replace("Z", " "))
         content_list.append(meeting[2])
-
     meetingid_list = []
 
     for meetingid in meetingid_list0:
@@ -57,7 +46,6 @@ def get_meeting_data(
         title = db.query(Meeting.title).filter(Meeting.meeting_id == meetingid).first()
         title_list.append(title[0])
 
-    logger.info(title_list)
     return {
         "title": title_list,
         "content": content_list,
@@ -72,7 +60,6 @@ def get_summary(type, content, db: Session = Depends(get_db)):
     spark api转录后调用该接口生成摘要
     """
     summary = summary_generate(content, type)
-    logger.info(summary)
 
     return str(summary)
 
@@ -104,7 +91,7 @@ def check_history(meeting_id, db: Session = Depends(get_db)):
     for summary in summaries:
         content_list.append(summary[0])
         type_list.append(summary[1])
-        time_list.append(summary[2])
+        time_list.append(str(summary[2]).replace("T", " ").replace("Z", " "))
     return {"content": content_list, "type": type_list, "time": time_list}
 
 
