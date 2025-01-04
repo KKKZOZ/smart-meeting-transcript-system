@@ -56,7 +56,7 @@
             alert('登录成功！');
             router.push('/dashboard-default');
         } catch (err) {
-            error.value = err.message || '登录失败，请重试';
+            error.value = '登录失败，请重试';
         }
     };
 

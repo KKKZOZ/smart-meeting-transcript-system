@@ -261,3 +261,78 @@ def delete_user(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"删除用户失败: {str(e)}")
+
+
+@router.get("/overview", response_model=dict)
+def get_meeting_overview(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
+    """
+    获取用户的会议统计概览
+    """
+    print("get_meeting_overview")
+    # 获取用户创建的会议数量
+    created_meetings_count = (
+        db.query(Meeting).filter(Meeting.creator_id == current_user.user_id).count()
+    )
+
+    # 获取用户参与的会议数量（不包括自己创建的）
+    participated_meetings_count = (
+        db.query(Meeting)
+        .join(MeetingParticipants, Meeting.meeting_id == MeetingParticipants.meeting_id)
+        .filter(MeetingParticipants.participant_id == current_user.user_id)
+        .count()
+    )
+
+    # 获取合作的用户数量（包括创建的会议的参与者和参与的会议的创建者与其他参与者）
+    collaborated_users = set()
+
+    # 获取用户参与的所有会议ID
+    user_meeting_ids = (
+        db.query(MeetingParticipants.meeting_id)
+        .filter(MeetingParticipants.participant_id == current_user.user_id)
+        .all()
+    )
+
+    print(user_meeting_ids)
+    # 获取这些会议中的所有参与者
+    if user_meeting_ids:
+        meeting_ids = [meeting_id[0] for meeting_id in user_meeting_ids]
+        other_participants = (
+            db.query(MeetingParticipants.participant_id)
+            .filter(
+                MeetingParticipants.meeting_id.in_(meeting_ids),
+                MeetingParticipants.participant_id != current_user.user_id,
+            )
+            .all()
+        )
+        print(other_participants)
+        for participant in other_participants:
+            collaborated_users.add(participant[0])
+
+    # 计算会议总时长（分钟）
+    total_duration = 0.0
+    all_meetings = (
+        db.query(Meeting)
+        .filter(
+            (Meeting.creator_id == current_user.user_id)
+            | Meeting.meeting_id.in_(
+                db.query(MeetingParticipants.meeting_id).filter(
+                    MeetingParticipants.participant_id == current_user.user_id
+                )
+            )
+        )
+        .all()
+    )
+
+    for meeting in all_meetings:
+        if meeting.start_time and meeting.end_time:
+            duration = (meeting.end_time - meeting.start_time).total_seconds() / 60
+            total_duration += duration
+
+    return {
+        "created_meetings": created_meetings_count,
+        "participated_meetings": participated_meetings_count,
+        "collaborators": len(collaborated_users),
+        "total_duration": total_duration,
+    }
