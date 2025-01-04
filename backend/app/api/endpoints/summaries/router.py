@@ -140,7 +140,7 @@ def search_query(
     for meeting in meetings:
         meetingid_list0.append(meeting[0])
         content_list.append(meeting[1])
-        timestamp_list.append(meeting[2])
+        timestamp_list.append(str(meeting[2]).replace("T", " ").replace("Z", " "))
 
     meetingid_list = []
     for meetingid in meetingid_list0:
