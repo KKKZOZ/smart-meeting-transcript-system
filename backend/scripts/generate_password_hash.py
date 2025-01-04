@@ -19,8 +19,8 @@ def generate_sql_commands(users_data: list) -> str:
     for index, user in enumerate(users_data):
         hashed_password = generate_password_hash(user["password"])
         sql = f"""-- 插入用户 (密码: {user["password"]})
-INSERT INTO users (user_id,username, hashed_password, email,nickname,notification_type,enabled) VALUES 
-('{index+1}','{user["username"]}', '{hashed_password}', '{user["email"]}', '{user["nickname"]}',1,1);
+INSERT INTO users (user_id,username, hashed_password, email,nickname,notification_type,enabled,root) VALUES 
+('{index+1}','{user["username"]}', '{hashed_password}', '{user["email"]}', '{user["nickname"]}',1,1,{1 if 'root' in user['username']  else 0});
 """
         sql_commands.append(sql)
 
@@ -35,6 +35,12 @@ def generate_user_id() -> str:
 def main():
     # 预设用户数据
     users = [
+        {
+            "username": "root",
+            "password": "root123",
+            "email": "root@example.com",
+            "nickname": "超级管理员",
+        },
         {
             "username": "admin",
             "password": "admin123",

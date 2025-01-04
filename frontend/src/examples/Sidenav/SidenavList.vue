@@ -15,6 +15,7 @@
     };
 
     const unreadCount = computed(() => store.state.notifications.unreadCount);
+    const userRoot = computed(() => store.state.auth?.user?.root || false);
 
     onMounted(() => {
         const publicPages = ['signin', 'signup'];
@@ -102,6 +103,18 @@
                                 {{ unreadCount > 99 ? '99+' : unreadCount }}
                             </span>
                         </div>
+                    </template>
+                </sidenav-item>
+            </li>
+
+            <li v-if="userRoot" class="nav-item">
+                <sidenav-item
+                    to="/manage"
+                    :class="getRoute() === 'manage' ? 'active' : ''"
+                    :navText="isRTL ? 'إدارة' : 'Manage'"
+                >
+                    <template v-slot:icon>
+                        <i class="ni ni-settings text-info text-sm opacity-10"></i>
                     </template>
                 </sidenav-item>
             </li>

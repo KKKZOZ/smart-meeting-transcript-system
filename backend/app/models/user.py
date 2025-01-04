@@ -27,6 +27,8 @@ class User(Base):
 
     enabled = Column(Boolean, default=True)
 
+    root = Column(Boolean, default=False)
+
     def __str__(self):
         return (
             f"User(user_id={self.user_id}, username={self.username}, "

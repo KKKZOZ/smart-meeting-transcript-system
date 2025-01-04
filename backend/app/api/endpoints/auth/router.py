@@ -147,4 +147,5 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
         "email": current_user.email,
         "notification_type": current_user.notification_type,
         "frequency": current_user.frequency,
+        "root": current_user.root,
     }

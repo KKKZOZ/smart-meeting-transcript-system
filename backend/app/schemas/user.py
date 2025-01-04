@@ -69,3 +69,9 @@ class UserUpdate(UserCreate):
 
     notification_type: Optional[bool] = None
     frequency: Optional[str] = None
+
+
+class DeleteUserRequest(BaseModel):
+    """删除用户请求模型"""
+
+    user_id: str

@@ -50,7 +50,7 @@ async def log_request_middleware(request: Request, call_next):
     logger.info(f"请求头: {headers_to_log}")
 
     # 如果是POST请求，记录请求体
-    if request.method == "POST":
+    if request.method == "POST" or request.method == "DELETE":
         try:
             # 克隆请求体
             body_bytes = await request.body()

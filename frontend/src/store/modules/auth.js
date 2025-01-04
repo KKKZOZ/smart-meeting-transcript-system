@@ -70,6 +70,10 @@ export default {
             commit('SET_TOKEN', null)
             commit('SET_USER', null)
             commit('SET_LOGIN_STATE', false)
+        },
+        loginSuccess({ commit }, { user, token }) {
+            commit('SET_USER', user);
+            commit('SET_TOKEN', token);
         }
     }
 } 
