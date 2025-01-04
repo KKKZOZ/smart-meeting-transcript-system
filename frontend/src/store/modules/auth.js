@@ -45,12 +45,22 @@ export default {
         async login({ commit }, credentials) {
             try {
                 const response = await authService.login(credentials)
+                
                 const token = response.access_token
                 commit('SET_TOKEN', token)
-                commit('SET_USER', response.user)
+                const user = await authService.getUserInfo()
+                commit('SET_USER', user)
                 commit('SET_LOGIN_STATE', true)
+                
+                console.log('auth 提交后的状态:', {
+                    token: token,
+                    user: user,
+                    storeUser: this.state.auth.user
+                });
+                
                 return Promise.resolve(response)
             } catch (error) {
+                console.error('登录失败:', error);
                 return Promise.reject(error)
             }
         },

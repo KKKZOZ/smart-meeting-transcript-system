@@ -9,7 +9,11 @@
     const router = useRouter();
     const isRTL = computed(() => store.state.isRTL);
     const isLoggedIn = computed(() => store.state.auth?.isLoggedIn || false);
-    const username = computed(() => store.state.auth?.user?.username || '未登录');
+    const username = computed(() => {
+        console.log('auth state:', store.state.auth?.user?.username);
+        console.log('auth state:', store.state.auth);
+        return store.state.auth?.user?.username || '未登录';
+    });
 
     const route = useRoute();
 
@@ -25,15 +29,6 @@
         if (username.value !== '未登录') {
             router.push('/profile');
         }
-    };
-
-    const minimizeSidebar = () => store.commit('sidebarMinimize');
-    const toggleConfigurator = () => store.commit('toggleConfigurator');
-
-    const closeMenu = () => {
-        setTimeout(() => {
-            showMenu.value = false;
-        }, 100);
     };
 
     const handleLogoutAction = () => {
