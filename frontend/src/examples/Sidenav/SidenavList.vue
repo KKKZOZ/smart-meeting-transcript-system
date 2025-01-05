@@ -38,7 +38,17 @@
                     </template>
                 </sidenav-item>
             </li>
-
+            <li class="nav-item">
+                <sidenav-item
+                    to="/introduction"
+                    :class="getRoute() === 'introduction' ? 'active' : ''"
+                    :navText="isRTL ? 'صفحة جديدة' : 'Introduction'"
+                >
+                    <template v-slot:icon>
+                        <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
+                    </template>
+                </sidenav-item>
+            </li>
             <li class="nav-item">
                 <sidenav-item
                     to="/meetings"

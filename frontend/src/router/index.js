@@ -111,7 +111,7 @@ const routes = [
         component: Meetings,
     },
     {
-        path: '/Introduction',
+        path: '/introduction',
         name: 'Introduction',
         component: Introduction,
     },
