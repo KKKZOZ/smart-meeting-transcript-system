@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, computed, onMounted, watch } from 'vue';
     import axios from '@/axios';
     import MiniStatisticsCard from '@/examples/Cards/MiniStatisticsCard.vue';
     import GradientLineChart from '@/examples/Charts/GradientLineChart.vue';
@@ -12,7 +12,52 @@
         participatedMeetings: '0/0',
         collaborators: '0',
         totalDuration: '0',
+        monthlyData: [0, 0, 0, 0, 0, 0, 0, 1, 1], // 添加月度数据数组
     });
+
+    // 使用计算属性来处理图表数据
+    const chartData = computed(() => {
+        console.log('Computing chartData...');
+        console.log('Raw Monthly Data:', overview.value.monthlyData);
+
+        const monthlyDataArray = Array.from(overview.value.monthlyData || []);
+
+        return {
+            labels: getRecentMonths(),
+            datasets: [
+                {
+                    label: 'Monthly Meetings',
+                    data: monthlyDataArray,
+                },
+            ],
+        };
+    });
+
+    // 获取最近9个月的标签
+    const getRecentMonths = () => {
+        const months = [];
+        const monthNames = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+        ];
+        const now = new Date();
+
+        for (let i = 8; i >= 0; i--) {
+            const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            months.push(monthNames[month.getMonth()]);
+        }
+        return months;
+    };
 
     // 获取概览数据
     const fetchOverview = async () => {
@@ -23,7 +68,9 @@
                 participatedMeetings: response.data.participated_meetings || '0/0',
                 collaborators: response.data.collaborators || '0',
                 totalDuration: response.data.total_duration || '0',
+                monthlyData: response.data.monthly_data || Array(9).fill(0), // 使用后端返回的月度数据
             };
+            console.log(overview.value);
         } catch (error) {
             console.error('获取概览数据失败:', error.response?.data?.detail || error.message);
         }
@@ -89,27 +136,10 @@
                         <!-- line chart -->
                         <div class="card z-index-2">
                             <gradient-line-chart
+                                :key="JSON.stringify(overview.monthlyData)"
                                 id="chart-line"
                                 title="Meetings Overview"
-                                :chart="{
-                                    labels: [
-                                        'Apr',
-                                        'May',
-                                        'Jun',
-                                        'Jul',
-                                        'Aug',
-                                        'Sep',
-                                        'Oct',
-                                        'Nov',
-                                        'Dec',
-                                    ],
-                                    datasets: [
-                                        {
-                                            label: 'Mobile Apps',
-                                            data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-                                        },
-                                    ],
-                                }"
+                                :chart="chartData"
                             />
                         </div>
                     </div>

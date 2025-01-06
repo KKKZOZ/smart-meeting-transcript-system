@@ -12,6 +12,7 @@ from app.schemas.meeting import (
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
+from datetime import datetime, timedelta
 
 
 router = APIRouter()
@@ -312,6 +313,11 @@ def get_meeting_overview(
 
     # 计算会议总时长（分钟）
     total_duration = 0.0
+    # 初始化最近9个月的数据
+    current_date = datetime.now()
+    nine_months_ago = current_date - timedelta(days=270)
+    monthly_data = [0, 0, 0, 0, 0, 0, 0, 0, 0]  # 初始化9个月的数据数组
+
     all_meetings = (
         db.query(Meeting)
         .filter(
@@ -330,9 +336,22 @@ def get_meeting_overview(
             duration = (meeting.end_time - meeting.start_time).total_seconds() / 60
             total_duration += duration
 
+            # 如果会议在最近9个月内，添加到月度数据中
+            if meeting.start_time >= nine_months_ago:
+                # 计算会议月份与当前月份的差距
+                months_diff = (current_date.year - meeting.start_time.year) * 12 + (
+                    current_date.month - meeting.start_time.month
+                )
+                if months_diff < 9:
+                    monthly_data[8 - months_diff] = round(
+                        monthly_data[8 - months_diff] + duration, 2
+                    )
+
+    print("monthly_data", monthly_data)
     return {
         "created_meetings": created_meetings_count,
         "participated_meetings": participated_meetings_count,
         "collaborators": len(collaborated_users),
         "total_duration": total_duration,
+        "monthly_data": monthly_data,
     }
