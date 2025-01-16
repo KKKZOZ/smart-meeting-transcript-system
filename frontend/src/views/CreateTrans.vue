@@ -121,8 +121,23 @@
             alert('Failed to load user options.');
         }
     };
+
     // 提交表单数据
     const submitMeeting = async () => {
+        // 验证参会人员是否至少选择了一个
+        if (value1.value.length === 0) {
+            alert('请至少选择一个参会人员！');
+            return;
+        }
+
+        // 验证会议开始时间是否早于结束时间
+        const startTime = new Date(meeting.value.startTime);
+        const endTime = new Date(meeting.value.endTime);
+        if (startTime >= endTime) {
+            alert('会议开始时间必须早于结束时间！');
+            return;
+        }
+
         const payload = {
             title: meeting.value.name, // 后端期望的字段是 title
             start_time: meeting.value.startTime, // 后端期望的字段是 start_time
@@ -143,7 +158,6 @@
             console.log(error);
             console.error('Error creating meeting:', error);
             alert('Failed to create meeting.');
-            // router.push('/transcript-page');
         }
     };
 

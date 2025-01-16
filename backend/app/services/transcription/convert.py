@@ -96,7 +96,7 @@ def init_parameters(file_url):
 
 
 # 回调
-def poll_task_status(task_id, interval=30):
+def poll_task_status(task_id, interval=60):
     """
     轮询任务状态，直到任务完成。
 

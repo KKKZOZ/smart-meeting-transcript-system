@@ -94,7 +94,9 @@
                                 </template>
                             </el-dialog>
 
-                            <pre class="text-wrap mb-3 fs-5">{{ Text || '请点击生成文字' }}</pre>
+                            <pre class="mb-3 fs-5" style="white-space: pre-wrap">{{
+                                Text || '请点击生成文字'
+                            }}</pre>
 
                             <el-button
                                 v-if="isTranscribed === 0"
@@ -124,9 +126,12 @@
                             </div>
                         </div>
                         <div class="card-body" style="height: 55vh; overflow-y: auto">
-                            <pre v-if="[1, 2].includes(isTranscribed)" class="text-wrap fs-5">
-                                {{ translateText || '请选择要翻译成的语言' }}
-                            </pre>
+                            <pre
+                                v-if="[1, 2].includes(isTranscribed)"
+                                class="fs-5"
+                                style="white-space: pre-wrap"
+                                >{{ translateText || '请选择要翻译成的语言' }}</pre
+                            >
                             <p v-if="[-1, 0].includes(isTranscribed)" class="text-muted">
                                 请先转录会议
                             </p>
