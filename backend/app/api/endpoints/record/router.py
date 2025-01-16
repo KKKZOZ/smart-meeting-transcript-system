@@ -334,6 +334,8 @@ def get_meeting_overview(
     for meeting in all_meetings:
         if meeting.start_time and meeting.end_time:
             duration = (meeting.end_time - meeting.start_time).total_seconds() / 60
+            if duration < 0:
+                duration = 0
             total_duration += duration
 
             # 如果会议在最近9个月内，添加到月度数据中

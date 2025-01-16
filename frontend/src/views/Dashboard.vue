@@ -12,7 +12,7 @@
         participatedMeetings: '0/0',
         collaborators: '0',
         totalDuration: '0',
-        monthlyData: [0, 0, 0, 0, 0, 0, 0, 1, 1], // 添加月度数据数组
+        monthlyData: [0, 0, 0, 0, 0, 0, 0, 0, 0], // 添加月度数据数组
     });
 
     // 使用计算属性来处理图表数据
