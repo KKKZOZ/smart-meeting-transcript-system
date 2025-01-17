@@ -51,7 +51,11 @@
                 router.push('/signin');
             }
         } catch (err) {
-            error.value = err.response?.data?.errors[0]?.message || '注册失败，请重试';
+            console.log('err:', err);
+            error.value =
+                err.response?.data?.detail ||
+                err.response?.data?.errors[0]?.message ||
+                '注册失败，请重试';
         }
     };
 
