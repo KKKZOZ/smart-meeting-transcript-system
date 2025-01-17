@@ -1,10 +1,10 @@
 // src/axios.js
 import axios from 'axios';
-import store from '@/store'; 
+import store from '@/store';
 import router from '@/router';
 
 const instance = axios.create({
-    baseURL: 'http://localhost:8000', // 本地后端接口的基础 URL
+    baseURL: 'http://39.104.62.233:8000', // 本地后端接口的基础 URL
     timeout: 5000, // 将超时时间改为 5000 毫秒（5秒）
     headers: { 'Content-Type': 'application/json' },
 });
@@ -24,8 +24,6 @@ instance.interceptors.request.use(
     },
 );
 
-
-
 // 响应拦截器
 instance.interceptors.response.use(
     response => {
@@ -42,7 +40,7 @@ instance.interceptors.response.use(
             }
         }
         return Promise.reject(error);
-    }
+    },
 );
 
 export default instance;

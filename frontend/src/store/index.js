@@ -5,7 +5,7 @@ import auth from './modules/auth';
 export default createStore({
     modules: {
         notifications,
-        auth
+        auth,
     },
     state: {
         hideConfigButton: false,

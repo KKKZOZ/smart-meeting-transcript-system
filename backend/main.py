@@ -40,7 +40,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.middleware("http")(log_request_middleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # 允许的前端地址
+    allow_origins=["*"],  # 允许的前端地址
     allow_credentials=True,
     allow_methods=["*"],  # 允许的 HTTP 方法
     allow_headers=["*"],  # 允许的 HTTP 头
