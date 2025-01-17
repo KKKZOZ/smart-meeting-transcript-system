@@ -69,6 +69,12 @@
                                 >
                                     提醒
                                 </button>
+                                <button
+                                    @click="deleteTask(task)"
+                                    class="submit-btn"
+                                >
+                                    删除
+                                </button>
                             </td>
                         </tr>
                     </template>
@@ -199,6 +205,18 @@
             alert(`任务已提醒！`);
         } else {
             alert(`任务提醒失败`);
+        }
+    };
+
+    const deleteTask = async task => {
+        const response = await axios.post('/api/delete-task', {
+            task_id: task.task_id,
+        });
+        if (response.data.message == 'success') {
+            alert(`任务已删除！`);
+            router.go(0);
+        } else {
+            alert(`任务删除失败`);
         }
     };
 

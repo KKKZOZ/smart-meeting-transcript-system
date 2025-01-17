@@ -281,3 +281,17 @@ def remind_tasks(tasks_info: TasksToHandle, db: Session):
     )
 
     return note
+
+
+def delete_task(tasks_info: TasksToHandle, db: Session):
+    """
+    删除任务项
+    """
+    task = db.query(Task).filter(Task.task_id == tasks_info.task_id).first()
+    if not task:
+        return False
+
+    db.delete(task)
+    db.commit()
+
+    return True

@@ -110,3 +110,14 @@ async def remind_tasks(tasks_info: TasksToHandle, db: Session = Depends(get_db))
         return {"message": "fail"}
     else:
         return {"message": "success"}
+
+
+@router.post("/delete-task")
+async def delete_task(tasks_info: TasksToHandle, db: Session = Depends(get_db)):
+    """
+    删除任务项
+    """
+    if not extraction.delete_task(tasks_info, db):
+        return {"message": "fail"}
+    else:
+        return {"message": "success"}
