@@ -46,7 +46,7 @@ def send_notification_email(notification: Notification, recipient_email: str) ->
     
     内容：{notification.content}
     
-    截止时间：{notification.ddl.strftime('%Y-%m-%d %H:%M:%S')}
+    截止时间：{notification.ddl.strftime("%Y-%m-%d %H:%M:%S")}
     
     状态：{notification.status.value}
     

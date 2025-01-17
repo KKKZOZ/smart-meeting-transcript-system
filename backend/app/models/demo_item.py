@@ -12,4 +12,4 @@ class DemoItem(Base):
     value = Column(VARCHAR(255), nullable=True, default="")
 
     def __str__(self):
-        return f"DemoItem(\n" f"  id={self.id},\n" f"  value='{self.value}'\n" f")"
+        return f"DemoItem(\n  id={self.id},\n  value='{self.value}'\n)"

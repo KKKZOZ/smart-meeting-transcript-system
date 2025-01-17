@@ -11,7 +11,7 @@ httpx==0.25.1
 python-multipart==0.0.6
 pydantic-settings==2.1.0
 requests==2.31.0
-ruff==0.8.2
+ruff==0.9.2
 pre-commit==4.0.1
 oss2==2.19.1
 langchain-openai==0.2.14

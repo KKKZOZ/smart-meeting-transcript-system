@@ -20,7 +20,7 @@ def generate_sql_commands(users_data: list) -> str:
         hashed_password = generate_password_hash(user["password"])
         sql = f"""-- 插入用户 (密码: {user["password"]})
 INSERT INTO users (user_id,username, hashed_password, email,nickname,notification_type,enabled,root) VALUES 
-('{index+1}','{user["username"]}', '{hashed_password}', '{user["email"]}', '{user["nickname"]}',1,1,{1 if 'root' in user['username']  else 0});
+('{index + 1}','{user["username"]}', '{hashed_password}', '{user["email"]}', '{user["nickname"]}',1,1,{1 if "root" in user["username"] else 0});
 """
         sql_commands.append(sql)
 
