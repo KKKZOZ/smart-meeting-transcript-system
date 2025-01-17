@@ -2,7 +2,7 @@
     import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
     import { useRouter } from 'vue-router';
     import { useStore } from 'vuex';
-    import { authService } from '@/services/authService';
+    import authService from '@/services/authService';
     import Navbar from '@/examples/PageLayout/Navbar.vue';
     import AppFooter from '@/examples/PageLayout/Footer.vue';
     import ArgonInput from '@/components/ArgonInput.vue';
@@ -35,7 +35,7 @@
                 return;
             }
 
-            console.log('提交的表单数据：', formData.value);
+            console.log('提交的表单数据222：', formData.value);
             error.value = '';
             const response = await authService.register({
                 username: formData.value.username,
@@ -47,11 +47,11 @@
             console.log('Register Response:', response);
 
             if (response.access_token) {
-                alert('注册成功，已为您自动登录');
-                router.push('/dashboard-default');
+                alert('注册成功，已为跳转到登录');
+                router.push('/signin');
             }
         } catch (err) {
-            error.value = err.message || '注册失败，请重试';
+            error.value = err.response?.data?.errors[0]?.message || '注册失败，请重试';
         }
     };
 

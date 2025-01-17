@@ -17,6 +17,15 @@ export default {
         });
         return response.data;
     },
+    async register(userData) {
+        console.log('userData:', userData);
+        const response = await axios.post('/api/register', userData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return response.data
+    },
     async getUserInfo() {
         const response = await axios.get('/api/me');
         return response.data;
